@@ -1,0 +1,2283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>腾讯广告小客之家</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 滚动到底部脚本 -->
+  <script>
+    window.addEventListener('load', function() {
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+  </script>
+  
+  <!-- Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'wechat-bg': '#F2F2F2',
+            'tencent-blue': '#0084FF',
+            'tencent-orange': '#FF6700',
+            // 主页面使用腾讯蓝
+            primary: '#1677ff',
+            secondary: '#0FC6C2',
+            success: '#52C41A',
+            warning: '#FAAD14',
+            danger: '#FF4D4F',
+            // 新客福利页使用暖色系
+            benefit: {
+              primary: '#FF3B30',      // 红色
+              secondary: '#FF9500',    // 橙色
+              tertiary: '#FFCC00',     // 黄色
+              quaternary: '#FF6B6B',   // 珊瑚红
+              quinary: '#FF2D55',      // 粉红
+              amber: '#FF9E7D',        // 琥珀色
+            },
+            dark: '#1D2129',
+            light: '#F2F3F5',
+            gray: {
+              100: '#F7F8FA',
+              200: '#E5E6EB',
+              300: '#C9CDD4',
+              400: '#86909C',
+              500: '#4E5969',
+              600: '#272E3B',
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .card-shadow {
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      }
+      .card-hover:hover {
+        background-color: #f9f9f9;
+      }
+      .menu-divider {
+        color: #EEEEEE;
+      }
+      .dropdown-menu-item {
+        transition: background-color 0.2s;
+      }
+      .dropdown-menu-item:hover {
+        background-color: #f5f5f5;
+      }
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+      .text-balance {
+        text-wrap: balance;
+      }
+      /* 新客福利页专用样式 */
+      .text-shadow {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      }
+      .福利-card-hover {
+        transition: all 0.3s ease;
+      }
+      .福利-card-hover:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      }
+      .marquee-container {
+        overflow: hidden;
+        white-space: nowrap;
+        flex: 1;
+      }
+      .marquee-text {
+        display: inline-block;
+        animation: marquee 15s linear infinite;
+      }
+      @keyframes marquee {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
+      }
+    }
+  </style>
+  <style>
+    /* 基础动画定义 */
+    .fade-enter {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    .fade-enter-active {
+        opacity: 1;
+        transform: translateY(0);
+        transition: opacity 300ms, transform 300ms;
+    }
+    
+    /* 平滑滚动 */
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    /* 固定底部按钮 */
+    .fixed-bottom-btn {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 40;
+        padding: 16px;
+        background: linear-gradient(to top, white 80%, transparent 100%);
+    }
+    
+    /* 吸顶导航 */
+    .sticky-tabs {
+        position: sticky;
+        top: 4rem; /* 导航栏高度 */
+        z-index: 30;
+    }
+    
+    /* 加载指示器 */
+    .loading-indicator {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 1rem 0;
+    }
+    .loading-spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(22, 119, 255, 0.2);
+        border-radius: 50%;
+        border-top-color: #1677ff;
+        animation: spin 1s ease-in-out infinite;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body class="bg-wechat-bg font-sans">
+  <!-- 页面容器 -->
+  <div id="app-container">
+    <!-- 服务号页面 -->
+    <div id="service-page" class="block">
+      <!-- 顶部导航栏 -->
+      <header class="bg-wechat-bg sticky top-0 z-50 border-b border-gray-100">
+        <div class="flex items-center h-14 px-4">
+          <div class="flex-1 flex items-center justify-between">
+            <button>
+              <i class="fa fa-angle-left text-lg"></i>
+            </button>
+            <h1 class="text-base font-medium">腾讯广告小客之家</h1>
+            <button>
+              <i class="fa fa-user-o text-lg"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- 主内容区 -->
+      <main class="pb-20 px-4">
+        <!-- 第一组卡片时间 -->
+        <div class="flex justify-center my-3">
+          <span class="text-xs text-gray-400 bg-wechat-bg px-4">昨天 12:30</span>
+        </div>
+        
+        <!-- 第一组卡片：小客之家相关内容 - 整体可点击 -->
+        <div class="bg-white rounded-lg mb-8 card-shadow card-hover story-card cursor-pointer" data-story-id="1">
+          <!-- 头条：小客之家介绍 -->
+          <div class="border-b border-gray-100">
+            <div class="w-full relative">
+              <div class="absolute inset-0 bg-black opacity-20 z-0"></div>
+              <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/6e898b57d5314c268700d3b77c36136e~tplv-a9rns2rl98-image.image?rcl=2025090814521629DEC04EACE0E72A4D43&rk3s=8e244e95&rrcfp=2609e108&x-expires=1757919140&x-signature=liQpl0%2FVuEoOEmn0jBlUD4GNz5o%3D" class="w-full h-32 object-cover" alt="小客之家背景">
+              <div class="absolute inset-0 p-4 z-10 flex flex-col justify-center">
+                <h2 class="text-xl font-bold mb-2 text-white">腾讯广告小客之家</h2>
+                <p class="text-sm text-white">让每一个小生意都能被看见</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 第二个文章卡片：创业故事 -->
+          <div class="p-4 border-b border-gray-100">
+            <div class="flex items-start">
+              <div class="flex-1">
+                <p class="text-base">90后宝妈童装创业：从0到月销10万的真实故事</p>
+              </div>
+              <div class="ml-2">
+                <img src="https://picsum.photos/id/64/80/80" alt="创业故事" class="w-16 h-16 rounded">
+              </div>
+            </div>
+          </div>
+
+          <!-- 第三个文章卡片：经营技巧 -->
+          <div class="p-4">
+            <div class="flex items-start">
+              <div class="flex-1">
+                <p class="text-base">小客干货：新手如何设置合理的广告预算</p>
+              </div>
+              <div class="ml-2">
+                <img src="https://picsum.photos/id/292/80/80" alt="经营技巧" class="w-16 h-16 rounded">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 时间分隔线 -->
+        <div class="flex justify-center my-3">
+          <span class="text-xs text-gray-400 bg-wechat-bg px-4">今天 18:04</span>
+        </div>
+
+        <!-- 第二组卡片：小客之家服务内容 - 整体可点击 -->
+        <div class="bg-white rounded-lg mb-8 card-shadow card-hover story-card cursor-pointer" data-story-id="3">
+          <!-- 头条：趁手工具 -->
+          <div class="border-b border-gray-100">
+            <div class="w-full relative">
+              <div class="absolute inset-0 bg-black opacity-20 z-0"></div>
+              <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/f226f18e9cba4526827a52e93aeb512a~tplv-a9rns2rl98-image.image?rcl=202509081405011C4E1B8DA8E54508F5AD&rk3s=8e244e95&rrcfp=2609e108&x-expires=1757916305&x-signature=OdqKCUkgnKAaWxuWlIcrnIEsk%2Bs%3D" class="w-full h-32 object-cover" alt="趁手工具背景">
+              <div class="absolute inset-0 p-4 z-10 flex flex-col justify-center">
+                <h2 class="text-xl font-bold mb-1 text-white">趁手工具推荐</h2>
+                <p class="text-sm mb-1 text-white">按你的"痛点"找工具，简单好用，花钱有数</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 第五个文章卡片：本地推广工具 -->
+          <div class="p-4 border-b border-gray-100">
+            <div class="flex items-start">
+              <div class="flex-1">
+                <p class="text-base">本地推：精准触达店铺周边3-10公里潜在客户</p>
+              </div>
+              <div class="ml-2">
+                <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/f226f18e9cba4526827a52e93aeb512a~tplv-a9rns2rl98-image.image?rcl=202509081405011C4E1B8DA8E54508F5AD&rk3s=8e244e95&rrcfp=2609e108&x-expires=1757916305&x-signature=OdqKCUkgnKAaWxuWlIcrnIEsk%2Bs%3D" alt="本地推工具" class="w-16 h-16 rounded">
+              </div>
+            </div>
+          </div>
+
+          <!-- 第六个文章卡片：干货教程 -->
+          <div class="p-4">
+            <div class="flex items-start">
+              <div class="flex-1">
+                <p class="text-base">朋友圈广告设计3原则，不用PS也能做出高点击图</p>
+              </div>
+              <div class="ml-2">
+                <img src="https://picsum.photos/id/26/80/80" alt="朋友圈广告设计" class="w-16 h-16 rounded">
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- 底部导航栏 -->
+      <footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40">
+        <div class="flex items-center h-16 px-4">
+          <!-- 键盘切换按钮 -->
+          <button class="text-lg text-gray-500 mr-4">
+            <i class="fa fa-keyboard-o"></i>
+          </button>
+          
+          <!-- 分隔线 -->
+          <div class="menu-divider">|</div>
+          
+          <!-- 导航菜单 -->
+          <div class="flex-1 flex">
+            <!-- 创业故事 -->
+            <div id="stories-menu" class="flex-1 flex justify-center items-center cursor-pointer">
+              <div class="flex items-center">
+                <i class="fa fa-briefcase text-gray-500 mr-1"></i>
+                <span class="text-sm text-gray-500">创业故事</span>
+              </div>
+            </div>
+            
+            <!-- 分隔线 -->
+            <div class="menu-divider">|</div>
+            
+            <!-- 趁手工具 -->
+            <div id="tools-menu" class="flex-1 flex justify-center items-center cursor-pointer relative">
+              <div class="flex items-center">
+                <i class="fa fa-wrench text-gray-500 mr-1"></i>
+                <span class="text-sm text-gray-500">趁手工具</span>
+              </div>
+            </div>
+            
+            <!-- 分隔线 -->
+            <div class="menu-divider">|</div>
+            
+            <!-- 入驻福利 -->
+            <div id="benefits-menu" class="flex-1 flex justify-center items-center cursor-pointer relative">
+              <div class="flex items-center">
+                <i class="fa fa-gift text-gray-500 mr-1"></i>
+                <span class="text-sm text-gray-500">入驻福利</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      <!-- 趁手工具悬浮层 -->
+      <div id="tools-dropdown" class="fixed bottom-20 w-[160px] bg-white rounded-lg shadow-lg p-0 hidden" style="z-index: 50;">
+        <!-- 行业准入查询 -->
+        <div class="dropdown-menu-item h-10 flex items-center justify-center border-b border-gray-100">
+          <span class="text-base">行业准入查询</span>
+        </div>
+        <!-- 广告模拟器 -->
+        <div class="dropdown-menu-item h-10 flex items-center justify-center border-b border-gray-100">
+          <span class="text-base">广告模拟器</span>
+        </div>
+        <!-- 定制投放方案 -->
+        <div class="dropdown-menu-item h-10 flex items-center justify-center border-b border-gray-100">
+          <span class="text-base">定制投放方案</span>
+        </div>
+        <!-- 免费素材制作 -->
+        <div class="dropdown-menu-item h-10 flex items-center justify-center border-b border-gray-100">
+          <span class="text-base">免费素材制作</span>
+        </div>
+        <!-- 1V1专属顾问 -->
+        <div class="dropdown-menu-item h-10 flex items-center justify-center">
+          <span class="text-base">1V1专属顾问</span>
+        </div>
+      </div>
+
+      <!-- 入驻福利悬浮层 -->
+      <div id="benefits-dropdown" class="fixed bottom-20 w-[160px] bg-white rounded-lg shadow-lg p-0 hidden" style="z-index: 50;">
+        <!-- 电商新客礼包 -->
+        <div class="dropdown-menu-item h-10 flex items-center justify-center border-b border-gray-100">
+          <span class="text-base">电商新客礼包</span>
+        </div>
+        <!-- 本地新客礼包 -->
+        <div class="dropdown-menu-item h-10 flex items-center justify-center border-b border-gray-100">
+          <span class="text-base">本地新客礼包</span>
+        </div>
+        <!-- 个人新客礼包 -->
+        <div class="dropdown-menu-item h-10 flex items-center justify-center border-b border-gray-100">
+          <span class="text-base">个人新客礼包</span>
+        </div>
+        <!-- 其他行业礼包 -->
+        <div class="dropdown-menu-item h-10 flex items-center justify-center">
+          <span class="text-base">其他行业礼包</span>
+        </div>
+      </div>
+
+      <!-- 点击空白处关闭悬浮层的遮罩 -->
+      <div id="menu-overlay" class="fixed inset-0 z-40 hidden"></div>
+    </div>
+
+    <!-- 创业故事页面 -->
+    <div id="stories-page" class="hidden bg-gray-100 min-h-screen">
+      <!-- 导航栏 - 标题居中，带关闭按钮 -->
+      <header class="fixed top-0 left-0 right-0 bg-white shadow-sm z-40">
+        <div class="flex items-center px-4 h-16">
+          <!-- 列表页面标题 - 带关闭按钮 -->
+          <div id="list-header" class="w-full flex items-center justify-center">
+            <button id="close-list-btn" class="absolute left-4 flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors">
+              <i class="fa fa-arrow-left text-gray-500"></i>
+            </button>
+            <h1 class="text-lg font-bold text-dark">创业故事</h1>
+            <div class="w-10"></div> <!-- 占位，保持居中 -->
+          </div>
+          
+          <!-- 详情页面标题 -->
+          <div id="detail-header" class="w-full flex items-center hidden">
+            <button id="back-btn" class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors">
+              <i class="fa fa-arrow-left text-gray-500"></i>
+            </button>
+            <h1 class="text-lg font-bold text-dark flex-1 text-center">创业故事详情</h1>
+            <div class="w-10 h-10"></div> <!-- 占位，保持居中 -->
+          </div>
+        </div>
+      </header>
+
+      <!-- 主内容区 -->
+      <main class="pt-16 min-h-screen pb-24">
+        <!-- 列表页面 -->
+        <div id="list-page" class="block">
+          <!-- 行业筛选栏 - 吸顶 -->
+          <div class="sticky-tabs bg-white p-3 border-b border-gray-200 overflow-x-auto scrollbar-hide">
+            <div class="flex space-x-2 min-w-max pb-1">
+              <button class="industry-filter active px-3 py-1.5 bg-primary text-white text-sm rounded-full" data-industry="all">
+                全部
+              </button>
+              <button class="industry-filter px-3 py-1.5 bg-gray-100 text-gray-600 text-sm rounded-full" data-industry="retail">
+                零售电商
+              </button>
+              <button class="industry-filter px-3 py-1.5 bg-gray-100 text-gray-600 text-sm rounded-full" data-industry="food">
+                餐饮美食
+              </button>
+              <button class="industry-filter px-3 py-1.5 bg-gray-100 text-gray-600 text-sm rounded-full" data-industry="education">
+                教育培训
+              </button>
+              <button class="industry-filter px-3 py-1.5 bg-gray-100 text-gray-600 text-sm rounded-full" data-industry="service">
+                本地服务
+              </button>
+            </div>
+          </div>
+          
+          <!-- 准入行业提示 -->
+          <div class="bg-primary/5 border border-primary/20 rounded-lg mx-4 my-3 p-3">
+            <div class="flex items-start">
+              <i class="fa fa-info-circle text-primary mt-0.5 mr-2"></i>
+              <div>
+                <p class="text-sm text-gray-600">目前支持的准入行业包括：零售电商、餐饮美食、教育培训、本地服务，更多行业持续开放中～</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 故事列表 -->
+          <div id="stories-container" class="px-4 py-2 space-y-5">
+            <!-- 故事项将通过JavaScript动态生成 -->
+          </div>
+          
+          <!-- 加载指示器 -->
+          <div id="loading-indicator" class="loading-indicator hidden">
+            <div class="loading-spinner"></div>
+            <span class="ml-2 text-sm text-gray-500">加载更多内容...</span>
+          </div>
+          
+          <!-- 没有更多提示 -->
+          <div id="no-more" class="text-gray-400 text-sm py-6 text-center hidden">
+            更多精彩案例正在赶来中，敬请期待！😉
+          </div>
+        </div>
+        
+        <!-- 详情页面 -->
+        <div id="detail-page" class="hidden bg-white min-h-screen pb-24">
+          <!-- 故事封面 -->
+          <div class="relative h-48">
+            <img id="detail-image" src="" alt="创业故事封面" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+            <div class="absolute bottom-0 left-0 right-0 p-4">
+              <span id="detail-industry" class="inline-block px-2.5 py-1 bg-primary/90 text-white text-xs rounded-full mb-2"></span>
+              <h2 id="detail-title" class="text-white text-xl font-bold"></h2>
+            </div>
+          </div>
+          
+          <!-- 关键信息卡片 - 调整位置避免被遮挡 -->
+          <div class="px-4 -mt-4 relative z-10">
+            <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+              <div class="grid grid-cols-3 gap-2 text-center">
+                <div>
+                  <p class="text-gray-400 text-xs mb-1">广告投入</p>
+                  <p id="detail-cost" class="text-primary font-bold"></p>
+                </div>
+                <div>
+                  <p class="text-gray-400 text-xs mb-1">获客成本</p>
+                  <p id="detail-customer-cost" class="text-primary font-bold"></p>
+                </div>
+                <div>
+                  <p class="text-gray-400 text-xs mb-1">见效时间</p>
+                  <p id="detail-period" class="text-primary font-bold"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 核心收益 -->
+          <div class="px-4 mb-4">
+            <div class="bg-success/10 border border-success/20 rounded-xl p-4">
+              <h3 class="font-bold text-success text-base mb-2 flex items-center">
+                <i class="fa fa-trophy mr-2"></i> 广告投放核心收益
+              </h3>
+              <div id="detail-benefits" class="space-y-2">
+                <!-- 动态填充 -->
+              </div>
+            </div>
+          </div>
+          
+          <!-- 故事内容 -->
+          <div class="px-4 pb-6">
+            <!-- 商家信息 -->
+            <div class="flex items-center mb-6">
+              <div class="w-12 h-12 rounded-full overflow-hidden">
+                <img id="owner-avatar" src="" alt="商家头像" class="w-full h-full object-cover">
+              </div>
+              <div class="ml-3">
+                <h3 id="owner-name" class="font-bold text-dark"></h3>
+                <p id="owner-business" class="text-gray-500 text-sm"></p>
+              </div>
+            </div>
+            
+            <!-- 故事正文 -->
+            <div class="space-y-6 text-gray-600">
+              <div id="detail-intro" class="prose prose-sm max-w-none">
+                <!-- 动态填充 -->
+              </div>
+              
+              <!-- 使用的工具和服务 -->
+              <div>
+                <h3 class="font-bold text-dark text-lg mb-3 flex items-center">
+                  <i class="fa fa-wrench text-primary mr-2"></i> 使用的腾讯广告工具与服务
+                </h3>
+                <div id="detail-tools" class="grid grid-cols-2 gap-3">
+                  <!-- 动态填充 -->
+                </div>
+              </div>
+              
+              <!-- 投放前后对比 -->
+              <div>
+                <h3 class="font-bold text-dark text-lg mb-3 flex items-center">
+                  <i class="fa fa-exchange text-primary mr-2"></i> 投放前后效果对比
+                </h3>
+                <div class="bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
+                  <div class="grid grid-cols-2 divide-x divide-gray-200">
+                    <div class="p-4 text-center bg-white">
+                      <p class="text-gray-500 text-sm mb-3">投放前</p>
+                      <div id="before-stats" class="space-y-3">
+                        <!-- 动态填充 -->
+                      </div>
+                    </div>
+                    <div class="p-4 text-center bg-white">
+                      <p class="text-gray-500 text-sm mb-3">投放后</p>
+                      <div id="after-stats" class="space-y-3">
+                        <!-- 动态填充 -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 操作步骤 -->
+              <div>
+                <h3 class="font-bold text-dark text-lg mb-3 flex items-center">
+                  <i class="fa fa-list-ol text-primary mr-2"></i> 广告投放关键步骤
+                </h3>
+                <div id="detail-steps" class="space-y-4">
+                  <!-- 动态填充 -->
+                </div>
+              </div>
+              
+              <!-- 经验分享 -->
+              <div>
+                <h3 class="font-bold text-dark text-lg mb-3 flex items-center">
+                  <i class="fa fa-lightbulb-o text-primary mr-2"></i> 给新手的建议
+                </h3>
+                <div id="detail-advice" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                  <!-- 动态填充 -->
+                </div>
+              </div>
+              
+              <!-- 相关案例推荐 -->
+              <div class="mt-8">
+                <h3 class="font-bold text-dark text-lg mb-3 flex items-center">
+                  <i class="fa fa-thumbs-up text-primary mr-2"></i> 相关案例推荐
+                </h3>
+                <div id="related-stories" class="flex flex-col gap-3">
+                  <!-- 动态填充 -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- 固定底部按钮 -->
+      <div class="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 shadow-lg">
+        <button id="go-to-ad-platform" class="w-full py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition-colors shadow-lg flex items-center justify-center">
+          <i class="fa fa-rocket mr-2"></i> 我也试试看
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 新客福利页 -->
+    <div id="benefits-page" class="hidden bg-gray-50 min-h-screen">
+      <!-- 顶部导航 - 吸顶效果 -->
+      <header class="bg-white shadow-sm py-3 px-4 flex justify-between items-center fixed top-0 left-0 right-0 z-50">
+          <div class="flex items-center" id="close-benefits-btn">
+              <i class="fa fa-arrow-left text-dark text-lg mr-2"></i>
+              <span class="font-medium">返回</span>
+          </div>
+          <div class="text-center font-bold text-lg">新客入驻豪礼</div>
+          <div class="w-8"></div> <!-- 占位元素 -->
+      </header>
+
+      <!-- 主内容区域 - 添加顶部间距避免被导航栏遮挡 -->
+      <main class="pt-14 pb-24">
+          <!-- 顶部Banner -->
+          <section class="w-full">
+              <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/b37732e7af294b62bbfc172984e5fe15.png~tplv-a9rns2rl98-24:720:720.png?rk3s=1fb89129&x-expires=1758184840&x-signature=JyK4gJebXVf1P0YhhY8C67Zstho%3D" 
+                   alt="新客入驻福利宣传图" 
+                   class="w-full h-auto object-cover">
+          </section>
+
+          <!-- 倒计时区域 - 增强紧迫感 -->
+          <section class="bg-white mx-4 mt-4 rounded-xl shadow-md p-4 flex items-center border-l-4 border-benefit-primary">
+              <div class="bg-benefit-primary/10 text-benefit-primary p-2 rounded-lg mr-3">
+                  <i class="fa fa-fire text-xl"></i>
+              </div>
+              <div class="flex-1">
+                  <p class="text-sm text-gray-600">限时福利即将结束</p>
+                  <div class="flex items-center mt-1">
+                          <span class="text-sm font-medium">剩余：</span>
+                          <div class="flex ml-2" id="countdown">
+                              <div id="hours" class="bg-benefit-primary text-white rounded px-2 py-1 text-sm font-bold">03</div>
+                              <span class="mx-1 text-benefit-primary font-bold">:</span>
+                              <div id="minutes" class="bg-benefit-primary text-white rounded px-2 py-1 text-sm font-bold">25</div>
+                              <span class="mx-1 text-benefit-primary font-bold">:</span>
+                              <div id="seconds" class="bg-benefit-primary text-white rounded px-2 py-1 text-sm font-bold">46</div>
+                          </div>
+                      </div>
+              </div>
+          </section>
+
+          <!-- 福利区域 - 固定一排两个 -->
+          <section class="mt-5 px-4">
+              <h2 class="text-xl font-bold mb-4 flex items-center text-dark">
+                  <span class="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-2">
+                      <i class="fa fa-gift"></i>
+                  </span>
+                  新客专享福利
+              </h2>
+              
+              <!-- 使用grid-cols-2确保在所有屏幕尺寸下都是两列 -->
+              <div class="grid grid-cols-2 gap-3">
+                  <!-- 福利1 - 首充返现 -->
+                  <div class="bg-benefit-primary text-white rounded-xl shadow-md overflow-hidden p-4 福利-card-hover">
+                      <div class="flex justify-between items-start">
+                          <div class="flex flex-col h-full flex-1 w-full">
+                              <h3 class="font-bold text-base">首充返现</h3>
+                              <span class="inline-block bg-white/20 text-white py-0.5 rounded-full text-xs whitespace-nowrap mt-1 w-[6em] text-center">
+                                  最高返20%
+                              </span>
+                              <p class="text-white/90 mt-1 text-xs pr-2">首次充值满1000元立返200元，多充多返</p>
+                              <div class="mt-auto inline-block bg-white text-benefit-primary py-0.5 rounded-full text-xs font-medium benefit-button w-[6em] text-center">
+                                  立即领取
+                              </div>
+                          </div>
+                          <div class="text-4xl opacity-20 -mt-2 -mr-2 flex-shrink-0">
+                              <i class="fa fa-money"></i>
+                          </div>
+                      </div>
+                  </div>
+                  
+                  <!-- 福利2 - 首月投放9折 -->
+                  <div class="bg-benefit-secondary text-white rounded-xl shadow-md overflow-hidden p-4 福利-card-hover">
+                      <div class="flex justify-between items-start">
+                          <div class="flex flex-col h-full flex-1 w-full">
+                              <h3 class="font-bold text-base">首月投放9折</h3>
+                              <span class="inline-block bg-white/20 text-white py-0.5 rounded-full text-xs whitespace-nowrap mt-1 w-[6em] text-center">
+                                  限时折扣
+                              </span>
+                              <p class="text-white/90 mt-1 text-xs pr-2">新客专享首月广告投放9折优惠，超值划算</p>
+                              <div class="mt-auto inline-block bg-white text-benefit-secondary py-0.5 rounded-full text-xs font-medium benefit-button w-[6em] text-center">
+                                  立即领取
+                              </div>
+                          </div>
+                          <div class="text-4xl opacity-20 -mt-2 -mr-2 flex-shrink-0">
+                              <i class="fa fa-percent"></i>
+                          </div>
+                      </div>
+                  </div>
+                  
+                  <!-- 福利3 - 专业指导 -->
+                  <div class="bg-benefit-tertiary text-dark rounded-xl shadow-md overflow-hidden p-4 福利-card-hover">
+                      <div class="flex justify-between items-start">
+                          <div class="flex flex-col h-full flex-1 w-full">
+                              <h3 class="font-bold text-base w-full">1对1专家指导</h3>
+                              <span class="inline-block bg-dark/10 text-dark py-0.5 rounded-full text-xs whitespace-nowrap mt-1 w-[6em] text-center">
+                                  价值3000元
+                              </span>
+                              <p class="text-dark/80 mt-1 text-xs pr-2 w-full">专属运营顾问7天全程指导，从0到1掌握投放技巧</p>
+                              <div class="mt-auto inline-block bg-white text-benefit-secondary py-0.5 rounded-full text-xs font-medium benefit-button w-[6em] text-center">
+                                  立即领取
+                              </div>
+                          </div>
+                          <div class="text-4xl opacity-20 -mt-2 -mr-2 flex-shrink-0">
+                              <i class="fa fa-user"></i>
+                          </div>
+                      </div>
+                  </div>
+                  
+                  <!-- 福利4 - 课程礼包 -->
+                  <div class="bg-benefit-quaternary text-white rounded-xl shadow-md overflow-hidden p-4 福利-card-hover">
+                      <div class="flex justify-between items-start">
+                          <div class="flex flex-col h-full flex-1 w-full">
+                              <h3 class="font-bold text-base">精英课程礼包</h3>
+                              <span class="inline-block bg-white/20 text-white py-0.5 rounded-full text-xs whitespace-nowrap mt-1 w-[6em] text-center">
+                                  价值1999元
+                              </span>
+                              <p class="text-white/90 mt-1 text-xs pr-2">包含15节精品课程，从入门到精通广告投放全攻略</p>
+                              <div class="mt-auto inline-block bg-white text-benefit-quaternary py-0.5 rounded-full text-xs font-medium benefit-button w-[6em] text-center">
+                                  立即领取
+                              </div>
+                          </div>
+                          <div class="text-4xl opacity-20 -mt-2 -mr-2 flex-shrink-0">
+                              <i class="fa fa-graduation-cap"></i>
+                          </div>
+                      </div>
+                  </div>
+                  
+                  <!-- 福利5 - 素材制作 -->
+                  <div class="bg-benefit-quinary text-white rounded-xl shadow-md overflow-hidden p-4 福利-card-hover">
+                      <div class="flex justify-between items-start">
+                          <div class="flex flex-col h-full flex-1 w-full">
+                              <h3 class="font-bold text-base">素材制作</h3>
+                              <span class="inline-block bg-white/20 text-white py-0.5 rounded-full text-xs whitespace-nowrap mt-1 w-[6em] text-center">
+                                  免费获取
+                              </span>
+                              <p class="text-white/90 mt-1 text-xs pr-2">免费10套优质广告素材设计，专业团队制作</p>
+                              <div class="mt-auto inline-block bg-white text-benefit-quinary py-0.5 rounded-full text-xs font-medium benefit-button w-[6em] text-center">
+                                  立即领取
+                              </div>
+                          </div>
+                          <div class="text-4xl opacity-20 -mt-2 -mr-2 flex-shrink-0">
+                              <i class="fa fa-picture-o"></i>
+                          </div>
+                      </div>
+                  </div>
+                  
+                  <!-- 福利6 - 商家社群 -->
+                  <div class="bg-benefit-amber text-white rounded-xl shadow-md overflow-hidden p-4 福利-card-hover">
+                      <div class="flex justify-between items-start">
+                          <div class="flex flex-col h-full flex-1 w-full">
+                              <h3 class="font-bold text-base">商家社群</h3>
+                              <span class="inline-block bg-white/20 text-white py-0.5 rounded-full text-xs whitespace-nowrap mt-1 w-[6em] text-center">
+                                  顶级资源
+                              </span>
+                              <p class="text-white/90 mt-1 text-xs pr-2">加入顶级商家交流圈，共享资源与成功经验</p>
+                              <div class="mt-auto inline-block bg-white text-benefit-amber py-0.5 rounded-full text-xs font-medium benefit-button w-[6em] text-center">
+                                  立即加入
+                              </div>
+                          </div>
+                          <div class="text-4xl opacity-20 -mt-2 -mr-2 flex-shrink-0">
+                              <i class="fa fa-users"></i>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </section>
+          
+          <!-- 信任背书 -->
+          <section class="mt-5 px-4">
+              <div class="bg-white rounded-xl shadow-sm p-4">
+                  <div class="flex items-center justify-between">
+                      <div class="flex items-center">
+                          <i class="fa fa-star text-tertiary mr-2"></i>
+                          <span class="font-bold">商家见证</span>
+                      </div>
+                      <div class="flex -space-x-2">
+                          <img src="https://picsum.photos/36/36?random=1" alt="用户头像" class="w-8 h-8 rounded-full border-2 border-white">
+                          <img src="https://picsum.photos/36/36?random=2" alt="用户头像" class="w-8 h-8 rounded-full border-2 border-white">
+                          <img src="https://picsum.photos/36/36?random=3" alt="用户头像" class="w-8 h-8 rounded-full border-2 border-white">
+                          <img src="https://picsum.photos/36/36?random=4" alt="用户头像" class="w-8 h-8 rounded-full border-2 border-white">
+                          <div class="w-8 h-8 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center text-xs font-bold">
+                              10k+
+                          </div>
+                      </div>
+                  </div>
+                  <p class="text-sm text-gray-600 mt-3">
+                      本月已有<span class="text-primary font-bold">1,258</span>家新商户入驻，平均提升业绩<span class="text-quaternary font-bold">150%</span>
+                  </p>
+              </div>
+          </section>
+          
+          <!-- 限时提示 - 跑马灯效果 -->
+          <section class="mt-4 px-4 mb-4">
+              <div class="bg-benefit-primary/10 border border-benefit-primary/20 rounded-xl p-3 flex items-center">
+                  <!-- 固定图标 -->
+                  <i class="fa fa-bullhorn text-benefit-primary mr-3 flex-shrink-0"></i>
+                  
+                  <!-- 跑马灯容器 -->
+                  <div class="marquee-container overflow-hidden">
+                      <div class="marquee-text whitespace-nowrap">
+                          <p class="text-sm text-benefit-primary font-medium animate-marquee">
+                              本月入驻额外赠送价值500元的推广礼包，仅剩最后3天！—— 新用户专享福利，错过再等一年！
+                          </p>
+                      </div>
+                  </div>
+              </div>
+          </section>
+      </main>
+
+      <!-- 底部固定按钮 -->
+      <footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg z-50">
+          <button id="go-to-platform-btn" class="w-full bg-benefit-primary hover:bg-benefit-primary/90 text-white font-bold py-4 rounded-xl shadow-lg transform transition-all duration-300 hover:shadow-xl active:scale-98 animate-pulse-slow flex items-center justify-center text-lg">
+              <i class="fa fa-rocket mr-2"></i>
+              立即入驻，抢占福利
+          </button>
+          <p class="text-center text-gray-500 text-xs mt-2">
+              30秒完成入驻 · 无需任何费用 · 全程无忧
+          </p>
+      </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+    // DOM元素获取
+    const appContainer = document.getElementById('app-container');
+    const servicePage = document.getElementById('service-page');
+    const storiesPage = document.getElementById('stories-page');
+    const benefitsPage = document.getElementById('benefits-page');
+    const closeBenefitsBtn = document.getElementById('close-benefits-btn');
+    const storiesMenu = document.getElementById('stories-menu');
+    const closeListBtn = document.getElementById('close-list-btn');
+    const backBtn = document.getElementById('back-btn');
+    const listHeader = document.getElementById('list-header');
+    const detailHeader = document.getElementById('detail-header');
+    const listPage = document.getElementById('list-page');
+    const detailPage = document.getElementById('detail-page');
+    const storyCards = document.querySelectorAll('.story-card');
+    
+    // 二级菜单控制
+    const benefitsMenu = document.getElementById('benefits-menu');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    const menuOverlay = document.getElementById('menu-overlay');
+    const tryItMenu = document.getElementById('try-it-menu');
+
+    // 导航路径状态标记
+    let isFromMenuPath = false;
+
+    // 点击创业故事菜单打开创业故事列表页
+    storiesMenu.addEventListener('click', function() {
+      isFromMenuPath = true; // 标记为从菜单路径进入
+      servicePage.classList.add('hidden');
+      storiesPage.classList.remove('hidden');
+      listHeader.classList.remove('hidden');
+      detailHeader.classList.add('hidden');
+      listPage.classList.remove('hidden');
+      detailPage.classList.add('hidden');
+    });
+
+    // 点击关闭按钮返回服务号页面
+    closeListBtn.addEventListener('click', function() {
+      storiesPage.classList.add('hidden');
+      servicePage.classList.remove('hidden');
+    });
+
+    // 点击返回按钮 - 根据进入路径决定返回目标
+    backBtn.addEventListener('click', function() {
+      if (isFromMenuPath) {
+        // 从底部菜单 -> 列表 -> 详情的路径，返回到列表页
+        detailHeader.classList.add('hidden');
+        listHeader.classList.remove('hidden');
+        detailPage.classList.add('hidden');
+        listPage.classList.remove('hidden');
+      } else {
+        // 从白色卡片直接进入详情的路径，直接返回到服务号页面
+        storiesPage.classList.add('hidden');
+        servicePage.classList.remove('hidden');
+      }
+    });
+
+    // 点击服务号白色卡片打开创业故事详情页
+    storyCards.forEach(card => {
+      card.addEventListener('click', function() {
+        isFromMenuPath = false; // 标记为从卡片直接进入
+        const storyId = parseInt(this.getAttribute('data-story-id'));
+        servicePage.classList.add('hidden');
+        storiesPage.classList.remove('hidden');
+        listHeader.classList.add('hidden');
+        detailHeader.classList.remove('hidden');
+        listPage.classList.add('hidden');
+        detailPage.classList.remove('hidden');
+        
+        // 页面滑动到顶部
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // 加载对应的故事详情
+        loadStoryDetail(storyId);
+      });
+    });
+
+    // 二级菜单控制 - 趁手工具
+    const toolsMenu = document.getElementById('tools-menu');
+    const toolsDropdown = document.getElementById('tools-dropdown');
+    const benefitsDropdown = document.getElementById('benefits-dropdown');
+
+    toolsMenu.addEventListener('click', function(e) {
+      e.stopPropagation();
+      
+      // 获取菜单位置
+      const menuRect = this.getBoundingClientRect();
+      const menuCenter = menuRect.left + menuRect.width / 2;
+      
+      // 计算悬浮层位置，确保与菜单中心对齐，并保持安全边距
+      const dropdownWidth = toolsDropdown.offsetWidth || 160;
+      let leftPos = menuCenter - dropdownWidth / 2;
+      
+      // 确保有最小安全边距 (10px)
+      const viewportWidth = document.documentElement.clientWidth;
+      leftPos = Math.max(10, Math.min(leftPos, viewportWidth - dropdownWidth - 10));
+      
+      toolsDropdown.style.left = `${leftPos}px`;
+      
+      // 切换显示/隐藏
+      toolsDropdown.classList.toggle('hidden');
+      benefitsDropdown.classList.add('hidden'); // 关闭其他菜单
+      menuOverlay.classList.toggle('hidden');
+    });
+
+    // 二级菜单控制 - 入驻福利
+    benefitsMenu.addEventListener('click', function(e) {
+      e.stopPropagation();
+      
+      // 获取菜单位置
+      const menuRect = this.getBoundingClientRect();
+      const menuCenter = menuRect.left + menuRect.width / 2;
+      
+      // 计算悬浮层位置，确保与菜单中心对齐，并保持安全边距
+      const dropdownWidth = benefitsDropdown.offsetWidth || 160;
+      let leftPos = menuCenter - dropdownWidth / 2;
+      
+      // 确保有最小安全边距 (10px)
+      const viewportWidth = document.documentElement.clientWidth;
+      leftPos = Math.max(10, Math.min(leftPos, viewportWidth - dropdownWidth - 10));
+      
+      benefitsDropdown.style.left = `${leftPos}px`;
+      
+      // 切换显示/隐藏
+      benefitsDropdown.classList.toggle('hidden');
+      toolsDropdown.classList.add('hidden'); // 关闭其他菜单
+      menuOverlay.classList.toggle('hidden');
+    });
+
+    // 点击遮罩层关闭菜单
+    menuOverlay.addEventListener('click', function() {
+      toolsDropdown.classList.add('hidden');
+      benefitsDropdown.classList.add('hidden');
+      menuOverlay.classList.add('hidden');
+    });
+
+    // 点击菜单内部不关闭菜单
+    toolsDropdown.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+    
+    benefitsDropdown.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+
+    // 新客福利页相关 - 入驻福利二级菜单点击事件
+    const benefitsItems = benefitsDropdown.querySelectorAll('div');
+    benefitsItems.forEach(item => {
+      item.addEventListener('click', function() {
+        // 关闭悬浮层和遮罩
+        benefitsDropdown.classList.add('hidden');
+        menuOverlay.classList.add('hidden');
+        
+        // 切换显示新客福利页
+        servicePage.classList.add('hidden');
+        storiesPage.classList.add('hidden');
+        benefitsPage.classList.remove('hidden');
+        
+        // 页面滑动到顶部
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+
+    // 关闭新客福利页
+    closeBenefitsBtn.addEventListener('click', function() {
+      benefitsPage.classList.add('hidden');
+      servicePage.classList.remove('hidden');
+    });
+    
+    // 调整菜单宽度以适应三个菜单
+    const navMenu = document.querySelector('.flex-1.flex');
+    const menuItems = navMenu.querySelectorAll('div[id$="-menu"]');
+    menuItems.forEach(item => {
+      item.style.flex = '1';
+    });
+
+    // 创业故事数据 - 合并自创业故事-v12.html
+    const storiesData = [
+      {
+        id: 1,
+        title: "90后宝妈童装创业：从0到月销10万的真实故事",
+        industry: "零售电商",
+        industryKey: "retail",
+        image: "https://picsum.photos/id/64/600/400",
+        cost: "5000元/月",
+        customerCost: "¥32/单",
+        period: "7天",
+        benefitTag: "订单增长230%",
+        benefitIcon: "fa-line-chart",
+        owner: {
+          name: "李婷",
+          business: "童乐坊童装店",
+          avatar: "https://picsum.photos/id/1027/100/100"
+        },
+        benefits: [
+          "月销售额从3万增长到10万，提升233% 📈",
+          "新客户数量增长280%，获客成本降低40% 👏",
+          "客户复购率从20%提升至45% 💖",
+          "投入产出比达1:5.2 💰"
+        ],
+        intro: "作为一名90后宝妈，我在孩子出生后决定创业，开了一家童装微信小店。刚开始完全没有经验，靠着朋友介绍和小区妈妈们的支持，生意一直不温不火。直到接触了腾讯广告的1对1运营指导，才找到了突破点！在专业运营顾问的帮助下，我学会了如何精准定位目标客户、如何制作吸引人的广告素材，短短3个月，月销就从3万涨到了10万，真的太惊喜了！",
+        tools: [
+          {
+            name: "1对1专人服务",
+            desc: "专属运营顾问全程指导，制定投放策略",
+            icon: "fa-user"
+          },
+          {
+            name: "新手流量券",
+            desc: "获得500元新手流量券，降低试错成本",
+            icon: "fa-ticket"
+          },
+          {
+            name: "妙思自动创作",
+            desc: "智能生成广告素材，节省设计时间",
+            icon: "fa-magic"
+          },
+          {
+            name: "精准定向",
+            desc: "根据用户行为和兴趣精准触达潜在客户",
+            icon: "fa-bullseye"
+          }
+        ],
+        beforeStats: [
+          { label: "月销售额", value: "3万元" },
+          { label: "日均订单", value: "15单" },
+          { label: "新客占比", value: "25%" },
+          { label: "获客成本", value: "¥53/单" }
+        ],
+        afterStats: [
+          { label: "月销售额", value: "10万元" },
+          { label: "日均订单", value: "52单" },
+          { label: "新客占比", value: "68%" },
+          { label: "获客成本", value: "¥32/单" }
+        ],
+        steps: [
+          {
+            step: "1",
+            title: "开通广告账户并领取流量券",
+            desc: "在运营顾问指导下完成开户，领取500元新手流量券，简直太贴心了～"
+          },
+          {
+            step: "2",
+            title: "使用妙思工具制作素材",
+            desc: "上传产品图片，系统自动生成10组广告素材，再也不用请设计师了！"
+          },
+          {
+            step: "3",
+            title: "设置定向和预算",
+            desc: "针对25-40岁女性，设置5000元/月预算，精准触达目标客户"
+          },
+          {
+            step: "4",
+            title: "实时优化调整",
+            desc: "根据数据反馈，每周优化一次投放策略，效果越来越好！"
+          }
+        ],
+        advice: "1. 刚开始不用投太多，先小预算测试效果，我一开始只投了2000元，试错成本很低～<br>2. 一定要用好新手流量券，能帮你节省不少试错成本，白嫖的福利不要错过！<br>3. 多尝试不同的广告素材，我发现真人出镜的素材转化率更高，更有信任感～<br>4. 及时回复广告带来的咨询，转化率能提升30%以上，客户真的很在意响应速度！<br>5. 每周都要看数据报表，根据效果调整投放策略，数据不会骗人的！"
+      },
+      {
+        id: 2,
+        title: "奶茶店淡季逆袭：月客流提升180% ☕️",
+        industry: "餐饮美食",
+        industryKey: "food",
+        image: "https://picsum.photos/id/431/600/400",
+        cost: "8000元/月",
+        customerCost: "¥15/人",
+        period: "15天",
+        benefitTag: "到店增长180%",
+        benefitIcon: "fa-users",
+        owner: {
+          name: "王强",
+          business: "甜时光奶茶店",
+          avatar: "https://picsum.photos/id/1012/100/100"
+        },
+        benefits: [
+          "淡季月客流量提升180%，突破经营瓶颈 ❄️→☀️",
+          "周末高峰时段上座率从60%提升至95% 🏃‍♀️",
+          "新客占比提升至70%，年轻人比例显著增加 🧑‍🤝‍🧑",
+          "客户平均消费额提升25% 💰"
+        ],
+        intro: "我的奶茶店开在写字楼附近，每到夏天就是旺季，但冬季生意会下滑50%以上，每年冬天都特别发愁！😫 去年冬天抱着试试看的心态，用了腾讯广告的附近推功能，没想到效果超出预期，不仅填补了淡季空缺，还积累了大量忠实客户，现在冬天也不怕没生意啦！",
+        tools: [
+          {
+            name: "1对1专人服务",
+            desc: "餐饮行业专属顾问，提供定制化方案",
+            icon: "fa-user"
+          },
+          {
+            name: "附近推",
+            desc: "精准覆盖店铺周边3-10公里潜在客户",
+            icon: "fa-map-marker"
+          },
+          {
+            name: "优惠券投放",
+            desc: "智能生成优惠券，吸引客户到店消费",
+            icon: "fa-ticket"
+          },
+          {
+            name: "数据分析",
+            desc: "实时监控效果，优化投放策略",
+            icon: "fa-bar-chart"
+          }
+        ],
+        beforeStats: [
+          { label: "月客流量", value: "2000人" },
+          { label: "日均销售额", value: "3000元" },
+          { label: "客单价", value: "25元" },
+          { label: "复购率", value: "30%" }
+        ],
+        afterStats: [
+          { label: "月客流量", value: "5600人" },
+          { label: "日均销售额", value: "8000元" },
+          { label: "客单价", value: "31元" },
+          { label: "复购率", value: "45%" }
+        ],
+        steps: [
+          {
+            step: "1",
+            title: "开通附近推功能",
+            desc: "设置店铺位置，覆盖范围3-10公里，精准触达周边潜在客户"
+          },
+          {
+            step: "2",
+            title: "设计优惠券活动",
+            desc: "创建冬季热饮优惠券，吸引客户到店体验"
+          },
+          {
+            step: "3",
+            title: "设置定向人群",
+            desc: "针对18-35岁年轻人，特别是写字楼白领进行投放"
+          },
+          {
+            step: "4",
+            title: "优化调整",
+            desc: "根据到店数据，调整投放时间和预算分配"
+          }
+        ],
+        advice: "1. 餐饮行业一定要用好附近推功能，精准覆盖周边客户，效果真的很棒！<br>2. 优惠券是吸引新客的有效手段，但要注意设置合理的优惠力度，不要亏本赚吆喝～<br>3. 投放时间要根据店铺实际情况调整，我发现工作日的上午10点和下午3点投放效果最好！<br>4. 一定要做好客户到店后的服务，广告带来的客户体验好了，复购率自然就上去了！<br>5. 不要只在淡季投放，平时也要保持一定的投放量，维持店铺的曝光度！"
+      },
+      {
+        id: 3,
+        title: "本地推：精准触达店铺周边3-10公里潜在客户",
+        industry: "本地服务",
+        industryKey: "service",
+        image: "https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/f226f18e9cba4526827a52e93aeb512a~tplv-a9rns2rl98-image.image?rcl=202509081405011C4E1B8DA8E54508F5AD&rk3s=8e244e95&rrcfp=2609e108&x-expires=1757916305&x-signature=OdqKCUkgnKAaWxuWlIcrnIEsk%2Bs%3D",
+        cost: "3000元/月",
+        customerCost: "¥25/单",
+        period: "10天",
+        benefitTag: "订单增长150%",
+        benefitIcon: "fa-map-marker",
+        owner: {
+          name: "张伟",
+          business: "快洁家政服务",
+          avatar: "https://picsum.photos/id/1025/100/100"
+        },
+        benefits: [
+          "月订单量从50单增长到125单，提升150% 📈",
+          "客户满意度提升至95%，好评率显著增加 👍",
+          "获客成本降低35%，ROI提升至1:4.8 💰",
+          "品牌知名度提升，老客户介绍新客户比例增加"
+        ],
+        intro: "我经营的快洁家政服务主要做家庭保洁、擦玻璃等业务，刚开始主要靠朋友介绍和小区广告，业务量一直上不去。后来了解到腾讯广告的本地推功能，可以精准触达店铺周边3-10公里的潜在客户，抱着试试看的心态投放了一段时间，没想到效果这么好！现在我们的订单量翻了一番还多，客户质量也很高！",
+        tools: [
+          {
+            name: "本地推",
+            desc: "精准覆盖店铺周边3-10公里潜在客户",
+            icon: "fa-map-marker"
+          },
+          {
+            name: "智能定向",
+            desc: "根据用户画像精准匹配潜在客户",
+            icon: "fa-bullseye"
+          },
+          {
+            name: "效果监控",
+            desc: "实时查看广告效果，优化投放策略",
+            icon: "fa-bar-chart"
+          },
+          {
+            name: "客服工具",
+            desc: "及时响应客户咨询，提升转化率",
+            icon: "fa-comments"
+          }
+        ],
+        beforeStats: [
+          { label: "月订单量", value: "50单" },
+          { label: "获客成本", value: "¥38/单" },
+          { label: "新客占比", value: "40%" },
+          { label: "ROI", value: "1:2.5" }
+        ],
+        afterStats: [
+          { label: "月订单量", value: "125单" },
+          { label: "获客成本", value: "¥25/单" },
+          { label: "新客占比", value: "75%" },
+          { label: "ROI", value: "1:4.8" }
+        ],
+        steps: [
+          {
+            step: "1",
+            title: "开通广告账户",
+            desc: "在运营顾问指导下完成开户，设置店铺位置信息"
+          },
+          {
+            step: "2",
+            title: "设置投放范围",
+            desc: "选择店铺周边5公里范围作为投放区域，覆盖目标客户"
+          },
+          {
+            step: "3",
+            title: "制作广告素材",
+            desc: "上传服务场景照片，突出服务优势和价格优惠"
+          },
+          {
+            step: "4",
+            title: "优化投放策略",
+            desc: "根据数据反馈，调整投放时间和定向人群"
+          }
+        ],
+        advice: "1. 本地服务行业一定要用好本地推功能，精准触达周边客户是关键！<br>2. 广告素材要真实，突出服务优势和价格优惠，让客户一眼就能看到价值！<br>3. 投放时间要根据目标客户的活跃时间来调整，我发现周末和节假日的上午投放效果最好！<br>4. 一定要及时响应客户咨询，家政服务的客户往往需要快速得到回复！<br>5. 服务质量是根本，广告带来的客户体验好了，自然会有更多的回头客和转介绍！"
+      },
+      {
+        id: 4,
+        title: "朋友圈广告设计3原则，不用PS也能做出高点击图",
+        industry: "零售电商",
+        industryKey: "retail",
+        image: "https://picsum.photos/id/26/600/400",
+        cost: "4000元/月",
+        customerCost: "¥28/单",
+        period: "5天",
+        benefitTag: "点击率提升120%",
+        benefitIcon: "fa-picture-o",
+        owner: {
+          name: "陈静",
+          business: "优品生活馆",
+          avatar: "https://picsum.photos/id/1062/100/100"
+        },
+        benefits: [
+          "广告点击率提升120%，吸引更多潜在客户点击 🖱️",
+          "转化率提升85%，从点击到下单的转化效率显著提高 💹",
+          "获客成本降低40%，投放效果更高效 💰",
+          "品牌形象提升，客户认可度增加 🚀"
+        ],
+        intro: "作为一名没有设计经验的小商家，我之前做的广告素材总是点击率很低，投放效果也不理想。后来参加了腾讯广告的免费培训课程，学习了朋友圈广告设计的3个基本原则，还学会了使用妙思自动创作工具，不用PS也能做出高点击的广告图片！现在我的广告点击率提升了120%，转化率也跟着上去了，真的太感谢腾讯广告提供的这些实用工具和培训了！",
+        tools: [
+          {
+            name: "妙思自动创作",
+            desc: "智能生成广告素材，无需设计经验",
+            icon: "fa-magic"
+          },
+          {
+            name: "免费培训课程",
+            desc: "学习广告设计技巧和投放策略",
+            icon: "fa-graduation-cap"
+          },
+          {
+            name: "素材测试工具",
+            desc: "A/B测试不同素材效果，选择最优方案",
+            icon: "fa-flask"
+          },
+          {
+            name: "数据洞察",
+            desc: "分析用户偏好，优化素材方向",
+            icon: "fa-eye"
+          }
+        ],
+        beforeStats: [
+          { label: "广告点击率", value: "1.2%" },
+          { label: "转化率", value: "3.5%" },
+          { label: "获客成本", value: "¥47/单" },
+          { label: "ROI", value: "1:3.2" }
+        ],
+        afterStats: [
+          { label: "广告点击率", value: "2.6%" },
+          { label: "转化率", value: "6.5%" },
+          { label: "获客成本", value: "¥28/单" },
+          { label: "ROI", value: "1:5.8" }
+        ],
+        steps: [
+          {
+            step: "1",
+            title: "学习广告设计原则",
+            desc: "参加腾讯广告免费培训，学习朋友圈广告设计3原则：清晰、聚焦、有吸引力"
+          },
+          {
+            step: "2",
+            title: "使用妙思工具创作素材",
+            desc: "上传产品图片，选择模板，自动生成多组广告素材"
+          },
+          {
+            step: "3",
+            title: "A/B测试优化",
+            desc: "对不同素材进行测试，选择点击率最高的素材进行投放"
+          },
+          {
+            step: "4",
+            title: "持续优化调整",
+            desc: "根据数据反馈，不断优化素材和文案，提升效果"
+          }
+        ],
+          advice: "1. 没有设计经验没关系，腾讯广告的妙思工具真的很强大，一键生成高质量素材！<br>2. 广告设计一定要遵循清晰、聚焦、有吸引力的原则，让客户一眼就能看懂你在卖什么！<br>3. 多尝试不同的素材风格，通过A/B测试找到最适合自己产品的风格！<br>4. 文案要简洁明了，突出产品优势和客户利益点，不要写太多无关信息！<br>5. 定期参加腾讯广告的免费培训课程，学习最新的广告设计和投放技巧！"
+        },
+        // 教育培训行业故事
+        {
+          id: 5,
+          title: "舞蹈机构：广告让招生翻倍 💃",
+          industry: "教育培训",
+          industryKey: "education",
+          image: "https://picsum.photos/id/20/600/400",
+          cost: "10000元/月",
+          customerCost: "¥280/生",
+          period: "30天",
+          benefitTag: "招生增长210%",
+          benefitIcon: "fa-graduation-cap",
+          owner: {
+            name: "王芳",
+            business: "舞动精灵少儿舞蹈工作室",
+            avatar: "https://picsum.photos/id/1025/100/100"
+          },
+          benefits: [
+            "3个月招生增长210%，满座率从60%提升至95% 📈",
+            "获客成本比传统传单低60% 💰",
+            "家长满意度提升，转介绍率达35% 👍",
+            "品牌知名度显著提升，成为区域内知名机构 🏆"
+          ],
+          intro: "作为一名舞蹈老师，我开设的少儿舞蹈工作室面临着激烈的竞争。传统的发传单、社区推广效果越来越差，获客成本也越来越高，真的很头疼！😩 通过腾讯广告的精准投放，我们找到了最有效的招生方式，不仅降低了成本，还提高了生源质量，现在教室都快坐不下啦！",
+          tools: [
+            {
+              name: "1对1专人服务",
+              desc: "教育行业专家提供专业指导",
+              icon: "fa-user"
+            },
+            {
+              name: "新手流量券",
+              desc: "获得1000元教育行业专属流量券",
+              icon: "fa-ticket"
+            },
+            {
+              name: "妙思自动创作",
+              desc: "快速制作教学成果展示类素材",
+              icon: "fa-magic"
+            },
+            {
+              name: "人群定向",
+              desc: "精准触达2-8公里内有适龄儿童的家庭",
+              icon: "fa-users"
+            }
+          ],
+          beforeStats: [
+            { label: "学员总数", value: "80人" },
+            { label: "月均新增", value: "15人" },
+            { label: "获客成本", value: "¥700/生" },
+            { label: "满座率", value: "60%" }
+          ],
+          afterStats: [
+            { label: "学员总数", value: "250人" },
+            { label: "月均新增", value: "45人" },
+            { label: "获客成本", value: "¥280/生" },
+            { label: "满座率", value: "95%" }
+          ],
+          steps: [
+            {
+              step: "1",
+              title: "明确目标人群",
+              desc: "定位3-12岁儿童的家长，特别是关注艺术教育的家庭，精准！"
+            },
+            {
+              step: "2",
+              title: "制作教学成果展示",
+              desc: "用妙思工具制作学员表演视频和前后对比素材，效果超直观～"
+            },
+            {
+              step: "3",
+              title: "设置试听课程优惠",
+              desc: "推出9.9元体验课，降低家长决策门槛，报名率超高！"
+            },
+            {
+              step: "4",
+              title: "精细化投放管理",
+              desc: "根据数据反馈，重点投放转化率高的区域和时段，效果越来越好～"
+            }
+          ],
+          advice: "1. 教育机构一定要突出教学成果，用真实案例说话，家长们最看重这个！<br>2. 设置低价体验课作为引流产品，转化率会更高，9.9元真的很吸引人～<br>3. 广告投放时间要配合招生季和假期，效果事半功倍，开学前和寒暑假是黄金期！<br>4. 及时跟进咨询客户，24小时内回复率要达到100%，不然客户就跑啦！<br>5. 老学员的转介绍是最好的口碑，要设计好激励机制，比如送课时什么的～"
+        },
+        // 从创业故事-v12.html新增的故事 - 零售电商行业
+        {
+          id: 6,
+          title: "家居小物也能月销百万，这个秘诀你一定要知道！",
+          industry: "零售电商",
+          industryKey: "retail",
+          image: "https://picsum.photos/id/26/600/400",
+          cost: "6000元/月",
+          customerCost: "¥35/单",
+          period: "30天",
+          benefitTag: "销量增长300%",
+          benefitIcon: "fa-line-chart",
+          owner: {
+            name: "林小雨",
+            business: "生活家家居馆",
+            avatar: "https://picsum.photos/id/1014/100/100"
+          },
+          benefits: [
+            "月销售额从25万增长到100万，提升300% 🚀",
+            "店铺访问量增长4倍，新客占比达80% 👥",
+            "客户复购率从15%提升至42% 🔄",
+            "投入产出比达1:6.3 💸"
+          ],
+          intro: "我经营的家居小物店主要卖一些创意家居用品和装饰品，虽然产品很有特色，但一直不温不火。后来通过腾讯广告的精准投放，我们找到了最有效的获客方式，短短3个月，月销售额就从25万增长到了100万！现在我们已经是行业内小有名气的店铺了！",
+          tools: [
+            {
+              name: "1对1专人服务",
+              desc: "专属运营顾问全程指导，制定投放策略",
+              icon: "fa-user"
+            },
+            {
+              name: "妙思自动创作",
+              desc: "智能生成产品展示素材，提高点击率",
+              icon: "fa-magic"
+            },
+            {
+              name: "精准定向",
+              desc: "根据用户兴趣和行为精准触达潜在客户",
+              icon: "fa-bullseye"
+            },
+            {
+              name: "数据洞察",
+              desc: "实时分析数据，优化投放效果",
+              icon: "fa-bar-chart"
+            }
+          ],
+          beforeStats: [
+            { label: "月销售额", value: "25万元" },
+            { label: "日均订单", value: "120单" },
+            { label: "新客占比", value: "45%" },
+            { label: "获客成本", value: "¥60/单" }
+          ],
+          afterStats: [
+            { label: "月销售额", value: "100万元" },
+            { label: "日均订单", value: "480单" },
+            { label: "新客占比", value: "80%" },
+            { label: "获客成本", value: "¥35/单" }
+          ],
+          steps: [
+            {
+              step: "1",
+              title: "开通广告账户并领取流量券",
+              desc: "在运营顾问指导下完成开户，领取1000元新手流量券"
+            },
+            {
+              step: "2",
+              title: "使用妙思工具制作优质素材",
+              desc: "上传产品图片，自动生成多组创意广告素材"
+            },
+            {
+              step: "3",
+              title: "设置精准定向",
+              desc: "针对20-35岁女性，特别是喜欢家居装饰的用户进行投放"
+            },
+            {
+              step: "4",
+              title: "持续优化",
+              desc: "根据数据反馈，每周调整投放策略和素材"
+            }
+          ],
+          advice: "1. 家居类产品一定要注重视觉效果，用好的素材吸引客户点击！<br>2. 刚开始投放时，建议选择几款热销产品作为测试，找到效果最好的产品重点推广！<br>3. 广告文案要简洁明了，突出产品的独特卖点和优势！<br>4. 一定要及时回复客户咨询，提高转化率！<br>5. 定期更新广告素材，保持广告的新鲜感和吸引力！"
+        },
+        // 从创业故事-v12.html新增的故事 - 餐饮美食行业
+        {
+          id: 7,
+          title: "传统小吃店的逆袭：从排队半小时到排队2小时！",
+          industry: "餐饮美食",
+          industryKey: "food",
+          image: "https://picsum.photos/id/431/600/400",
+          cost: "8000元/月",
+          customerCost: "¥18/人",
+          period: "20天",
+          benefitTag: "客流量增长200%",
+          benefitIcon: "fa-users",
+          owner: {
+            name: "李建国",
+            business: "老北京小吃店",
+            avatar: "https://picsum.photos/id/1005/100/100"
+          },
+          benefits: [
+            "月客流量从5000人增长到15000人，提升200% 📈",
+            "周末高峰时段排队从半小时延长到2小时以上 🎉",
+            "外卖订单增长300%，覆盖范围扩大5公里 🏍️",
+            "品牌知名度提升，成为网红打卡地 📸"
+          ],
+          intro: "我家的小吃店已经开了20多年，虽然口味不错，但一直是周边居民来吃，没什么年轻人。后来通过腾讯广告的附近推和朋友圈广告，我们不仅吸引了大量本地年轻人，还成为了网红打卡地！现在周末排队都要2小时以上，生意比以前好多了！",
+          tools: [
+            {
+              name: "附近推",
+              desc: "精准覆盖店铺周边5公里潜在客户",
+              icon: "fa-map-marker"
+            },
+            {
+              name: "朋友圈广告",
+              desc: "通过KOC种草和用户评价提升品牌知名度",
+              icon: "fa-weixin"
+            },
+            {
+              name: "优惠券投放",
+              desc: "智能生成优惠券，吸引客户到店消费",
+              icon: "fa-ticket"
+            },
+            {
+              name: "数据分析",
+              desc: "实时监控效果，优化投放策略",
+              icon: "fa-bar-chart"
+            }
+          ],
+          beforeStats: [
+            { label: "月客流量", value: "5000人" },
+            { label: "日均销售额", value: "8000元" },
+            { label: "外卖占比", value: "10%" },
+            { label: "复购率", value: "40%" }
+          ],
+          afterStats: [
+            { label: "月客流量", value: "15000人" },
+            { label: "日均销售额", value: "25000元" },
+            { label: "外卖占比", value: "40%" },
+            { label: "复购率", value: "55%" }
+          ],
+          steps: [
+            {
+              step: "1",
+              title: "开通附近推和朋友圈广告",
+              desc: "设置店铺位置，覆盖周边5公里范围"
+            },
+            {
+              step: "2",
+              title: "制作特色美食素材",
+              desc: "拍摄小吃制作过程和成品展示，突出传统工艺"
+            },
+            {
+              step: "3",
+              title: "推出老顾客优惠活动",
+              desc: "老顾客带新顾客消费享受8折优惠，促进口碑传播"
+            },
+            {
+              step: "4",
+              title: "优化外卖服务",
+              desc: "与外卖平台合作，扩大覆盖范围"
+            }
+          ],
+          advice: "1. 传统餐饮行业想要吸引年轻人，一定要注重品牌年轻化和线上推广！<br>2. 附近推功能对于实体店真的很重要，可以精准覆盖周边潜在客户！<br>3. 美食类广告素材一定要突出食物的诱人之处，让客户看了就想吃！<br>4. 老顾客带新顾客的优惠活动是很好的口碑传播方式，可以尝试！<br>5. 一定要保证产品质量和服务质量，这是吸引回头客的关键！"
+        },
+        // 从创业故事-v12.html新增的故事 - 教育培训行业
+        {
+          id: 8,
+          title: "编程培训机构：用广告让招生季爆满！",
+          industry: "教育培训",
+          industryKey: "education",
+          image: "https://picsum.photos/id/20/600/400",
+          cost: "12000元/月",
+          customerCost: "¥320/生",
+          period: "45天",
+          benefitTag: "招生增长250%",
+          benefitIcon: "fa-graduation-cap",
+          owner: {
+            name: "赵天明",
+            business: "未来编程学院",
+            avatar: "https://picsum.photos/id/1027/100/100"
+          },
+          benefits: [
+            "3个月招生增长250%，班级满座率达100% 📈",
+            "获客成本比传统地推低55% 💰",
+            "家长满意度提升至98%，转介绍率达40% 👍",
+            "品牌知名度提升，成为区域内首选编程培训机构 🏆"
+          ],
+          intro: "我们的编程培训机构主要面向青少年，刚开始招生非常困难，传统的地推方式效果越来越差，获客成本也越来越高。后来通过腾讯广告的精准投放，我们找到了最有效的招生方式，不仅降低了成本，还提高了生源质量，现在招生季班级都爆满了！",
+          tools: [
+            {
+              name: "1对1专人服务",
+              desc: "教育行业专家提供专业指导",
+              icon: "fa-user"
+            },
+            {
+              name: "新手流量券",
+              desc: "获得1500元教育行业专属流量券",
+              icon: "fa-ticket"
+            },
+            {
+              name: "妙思自动创作",
+              desc: "快速制作学员成果展示类素材",
+              icon: "fa-magic"
+            },
+            {
+              name: "人群定向",
+              desc: "精准触达3-15公里内有适龄儿童的家庭",
+              icon: "fa-users"
+            }
+          ],
+          beforeStats: [
+            { label: "学员总数", value: "120人" },
+            { label: "月均新增", value: "20人" },
+            { label: "获客成本", value: "¥710/生" },
+            { label: "满座率", value: "65%" }
+          ],
+          afterStats: [
+            { label: "学员总数", value: "420人" },
+            { label: "月均新增", value: "70人" },
+            { label: "获客成本", value: "¥320/生" },
+            { label: "满座率", value: "100%" }
+          ],
+          steps: [
+            {
+              step: "1",
+              title: "明确目标人群",
+              desc: "定位8-16岁青少年的家长，特别是关注科技教育的家庭"
+            },
+            {
+              step: "2",
+              title: "制作学员成果展示",
+              desc: "用妙思工具制作学员编程作品和比赛获奖视频"
+            },
+            {
+              step: "3",
+              title: "设置体验课程优惠",
+              desc: "推出19.9元体验课，降低家长决策门槛"
+            },
+            {
+              step: "4",
+              title: "精细化投放管理",
+              desc: "根据数据反馈，重点投放转化率高的区域和时段"
+            }
+          ],
+          advice: "1. 教育培训机构一定要突出教学成果和学员案例，用事实说话！<br>2. 设置低价体验课作为引流产品，转化率会更高！<br>3. 广告投放时间要配合招生季和假期，效果事半功倍！<br>4. 及时跟进咨询客户，提高转化率！<br>5. 老学员的转介绍是最好的口碑，要设计好激励机制！"
+        },
+        // 从创业故事-v12.html新增的故事 - 本地服务行业
+        {
+          id: 9,
+          title: "宠物美容店的春天：从无人问津到门庭若市",
+          industry: "本地服务",
+          industryKey: "service",
+          image: "https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/f226f18e9cba4526827a52e93aeb512a~tplv-a9rns2rl98-image.image?rcl=202509081405011C4E1B8DA8E54508F5AD&rk3s=8e244e95&rrcfp=2609e108&x-expires=1757916305&x-signature=OdqKCUkgnKAaWxuWlIcrnIEsk%2Bs%3D",
+          cost: "4000元/月",
+          customerCost: "¥40/单",
+          period: "15天",
+          benefitTag: "订单增长180%",
+          benefitIcon: "fa-paw",
+          owner: {
+            name: "陈小美",
+            business: "萌宠乐园宠物美容店",
+            avatar: "https://picsum.photos/id/1027/100/100"
+          },
+          benefits: [
+            "月订单量从80单增长到225单，提升180% 📈",
+            "客户满意度提升至98%，好评率达100% 👍",
+            "获客成本降低40%，ROI提升至1:5.2 💰",
+            "品牌知名度提升，成为区域内知名宠物服务机构"
+          ],
+          intro: "我经营的宠物美容店刚开始没什么客户，主要靠朋友介绍和少量回头客。后来通过腾讯广告的本地推功能，精准触达周边养宠人群，生意越来越好！现在我们的客户不仅来自周边小区，还有很多从其他区域特意过来的顾客！",
+          tools: [
+            {
+              name: "本地推",
+              desc: "精准覆盖店铺周边5公里潜在客户",
+              icon: "fa-map-marker"
+            },
+            {
+              name: "智能定向",
+              desc: "根据用户兴趣和行为精准匹配养宠人群",
+              icon: "fa-bullseye"
+            },
+            {
+              name: "妙思自动创作",
+              desc: "快速制作宠物美容前后对比素材",
+              icon: "fa-magic"
+            },
+            {
+              name: "效果监控",
+              desc: "实时查看广告效果，优化投放策略",
+              icon: "fa-bar-chart"
+            }
+          ],
+          beforeStats: [
+            { label: "月订单量", value: "80单" },
+            { label: "获客成本", value: "¥67/单" },
+            { label: "新客占比", value: "35%" },
+            { label: "ROI", value: "1:3.1" }
+          ],
+          afterStats: [
+            { label: "月订单量", value: "225单" },
+            { label: "获客成本", value: "¥40/单" },
+            { label: "新客占比", value: "85%" },
+            { label: "ROI", value: "1:5.2" }
+          ],
+          steps: [
+            {
+              step: "1",
+              title: "开通广告账户",
+              desc: "在运营顾问指导下完成开户，设置店铺位置信息"
+            },
+            {
+              step: "2",
+              title: "制作宠物美容素材",
+              desc: "上传宠物美容前后对比照片，突出服务效果"
+            },
+            {
+              step: "3",
+              title: "设置新客优惠",
+              desc: "推出新客首单8折优惠，吸引客户体验"
+            },
+            {
+              step: "4",
+              title: "优化投放策略",
+              desc: "根据数据反馈，调整投放时间和定向人群"
+            }
+          ],
+          advice: "1. 宠物服务行业一定要用好本地推功能，精准触达周边养宠人群！<br>2. 广告素材要真实，突出服务前后对比效果，让客户一目了然！<br>3. 新客优惠是吸引第一次体验的有效手段，可以尝试！<br>4. 一定要注重服务质量和客户体验，宠物主人非常在意！<br>5. 建立客户档案，定期发送优惠信息和宠物护理知识，提高客户粘性！"
+        },
+        // 从创业故事-v12.html新增的故事 - 零售电商行业
+        {
+          id: 10,
+          title: "母婴店的线上转型：从实体店到全渠道销售",
+          industry: "零售电商",
+          industryKey: "retail",
+          image: "https://picsum.photos/id/64/600/400",
+          cost: "7000元/月",
+          customerCost: "¥50/单",
+          period: "30天",
+          benefitTag: "销售额增长280%",
+          benefitIcon: "fa-line-chart",
+          owner: {
+            name: "张雪梅",
+            business: "爱婴坊母婴店",
+            avatar: "https://picsum.photos/id/1062/100/100"
+          },
+          benefits: [
+            "月销售额从30万增长到115万，提升280% 📈",
+            "线上订单占比从10%提升至65% 📱",
+            "客户复购率从25%提升至55% 💖",
+            "覆盖范围从5公里扩大到20公里以上 🌍"
+          ],
+          intro: "我们的母婴店在当地开了5年，一直是传统的实体店模式。随着电商的冲击，生意越来越差。后来通过腾讯广告的精准投放，我们成功实现了线上转型，不仅保住了实体店的生意，还开拓了线上市场，现在线上订单已经占了总销售额的65%！",
+          tools: [
+            {
+              name: "1对1专人服务",
+              desc: "零售行业专家提供线上转型指导",
+              icon: "fa-user"
+            },
+            {
+              name: "微信小店",
+              desc: "快速搭建线上店铺，实现线上线下一体化",
+              icon: "fa-shopping-bag"
+            },
+            {
+              name: "精准定向",
+              desc: "根据用户兴趣和行为精准触达潜在客户",
+              icon: "fa-bullseye"
+            },
+            {
+              name: "会员管理",
+              desc: "建立客户会员体系，提高客户粘性",
+              icon: "fa-id-card"
+            }
+          ],
+          beforeStats: [
+            { label: "月销售额", value: "30万元" },
+            { label: "线上占比", value: "10%" },
+            { label: "新客占比", value: "40%" },
+            { label: "获客成本", value: "¥85/单" }
+          ],
+          afterStats: [
+            { label: "月销售额", value: "115万元" },
+            { label: "线上占比", value: "65%" },
+            { label: "新客占比", value: "75%" },
+            { label: "获客成本", value: "¥50/单" }
+          ],
+          steps: [
+            {
+              step: "1",
+              title: "搭建微信小店",
+              desc: "在运营顾问指导下快速搭建线上店铺，实现线上线下商品同步"
+            },
+            {
+              step: "2",
+              title: "制作产品展示素材",
+              desc: "上传产品图片，制作产品介绍视频",
+            },
+            {
+              step: "3",
+              title: "设置线上专属优惠",
+              desc: "推出线上下单享9折优惠，吸引客户线上购买"
+            },
+            {
+              step: "4",
+              title: "精细化运营",
+              desc: "根据数据反馈，调整产品结构和营销策略"
+            }
+          ],
+          advice: "1. 实体店一定要尽早进行线上转型，这是未来的趋势！<br>2. 线上店铺的搭建要简单易用，让客户能够轻松下单！<br>3. 线上线下一体化很重要，可以提供更多的购物选择和便利！<br>4. 会员体系是提高客户粘性的有效手段，可以建立积分、折扣等激励机制！<br>5. 定期举办线上活动，如秒杀、满减等，提高客户活跃度！"
+      }
+    ];
+
+      // 加载故事详情
+    function loadStoryDetail(storyId) {
+      const story = storiesData.find(s => s.id === storyId);
+      if (!story) return;
+
+      // 填充详情页面数据
+      document.getElementById('detail-image').src = story.image;
+      document.getElementById('detail-industry').textContent = story.industry;
+      document.getElementById('detail-title').textContent = story.title;
+      document.getElementById('detail-cost').textContent = story.cost;
+      document.getElementById('detail-customer-cost').textContent = story.customerCost;
+      document.getElementById('detail-period').textContent = story.period;
+      document.getElementById('owner-avatar').src = story.owner.avatar;
+      document.getElementById('owner-name').textContent = story.owner.name;
+      document.getElementById('owner-business').textContent = story.owner.business;
+      document.getElementById('detail-intro').innerHTML = `<p>${story.intro}</p>`;
+      
+      // 填充核心收益
+      const benefitsContainer = document.getElementById('detail-benefits');
+      benefitsContainer.innerHTML = '';
+      story.benefits.forEach(benefit => {
+        const benefitEl = document.createElement('div');
+        benefitEl.className = 'flex items-start';
+        benefitEl.innerHTML = `<i class="fa fa-check-circle text-success mt-1 mr-2"></i>
+                              <p class="text-sm">${benefit}</p>`;
+        benefitsContainer.appendChild(benefitEl);
+      });
+      
+      // 填充使用的工具和服务
+      const toolsContainer = document.getElementById('detail-tools');
+      toolsContainer.innerHTML = '';
+      story.tools.forEach(tool => {
+        const toolEl = document.createElement('div');
+        toolEl.className = 'bg-gray-50 p-3 rounded-lg border border-gray-200';
+        toolEl.innerHTML = `<div class="flex items-center mb-2">
+                            <i class="fa ${tool.icon} text-primary mr-2"></i>
+                            <h4 class="font-bold text-sm">${tool.name}</h4>
+                          </div>
+                          <p class="text-xs text-gray-500">${tool.desc}</p>`;
+        toolsContainer.appendChild(toolEl);
+      });
+      
+      // 填充投放前后对比
+      const beforeStatsContainer = document.getElementById('before-stats');
+      const afterStatsContainer = document.getElementById('after-stats');
+      beforeStatsContainer.innerHTML = '';
+      afterStatsContainer.innerHTML = '';
+      
+      story.beforeStats.forEach(stat => {
+        const statEl = document.createElement('div');
+        statEl.className = 'flex flex-col items-center';
+        statEl.innerHTML = `<p class="text-gray-500 text-xs">${stat.label}</p>
+                           <p class="font-bold text-dark">${stat.value}</p>`;
+        beforeStatsContainer.appendChild(statEl);
+      });
+      
+      story.afterStats.forEach(stat => {
+        const statEl = document.createElement('div');
+        statEl.className = 'flex flex-col items-center';
+        statEl.innerHTML = `<p class="text-gray-500 text-xs">${stat.label}</p>
+                           <p class="font-bold text-primary">${stat.value}</p>`;
+        afterStatsContainer.appendChild(statEl);
+      });
+      
+      // 填充操作步骤
+      const stepsContainer = document.getElementById('detail-steps');
+      stepsContainer.innerHTML = '';
+      story.steps.forEach(step => {
+        const stepEl = document.createElement('div');
+        stepEl.className = 'flex';
+        stepEl.innerHTML = `<div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold mr-3">
+                            ${step.step}
+                          </div>
+                          <div class="flex-1">
+                            <h4 class="font-bold text-dark mb-1">${step.title}</h4>
+                            <p class="text-sm text-gray-600">${step.desc}</p>
+                          </div>`;
+        stepsContainer.appendChild(stepEl);
+      });
+      
+      // 填充经验分享
+      document.getElementById('detail-advice').innerHTML = `<p class="text-sm text-gray-600">${story.advice}</p>`;
+      
+      // 填充相关故事推荐
+      renderRelatedStories(storyId, story.industryKey);
+    }
+
+    // 渲染相关故事推荐
+    function renderRelatedStories(currentStoryId, industryKey) {
+      const relatedStoriesContainer = document.getElementById('related-stories');
+      relatedStoriesContainer.innerHTML = '';
+      
+      // 筛选除当前故事外的同行业故事
+      const relatedStories = storiesData.filter(story => 
+        story.id !== currentStoryId && story.industryKey === industryKey
+      );
+      
+      // 如果同行业故事不足3个，则补充其他行业的故事
+      if (relatedStories.length < 3) {
+        const otherStories = storiesData.filter(story => 
+          story.id !== currentStoryId && story.industryKey !== industryKey
+        );
+        
+        // 随机选择一些其他行业的故事
+        const shuffledOtherStories = [...otherStories].sort(() => 0.5 - Math.random());
+        relatedStories.push(...shuffledOtherStories.slice(0, 3 - relatedStories.length));
+      }
+      
+      // 确保最多显示3个相关故事
+      const displayStories = relatedStories.slice(0, 3);
+      
+      displayStories.forEach(story => {
+        const relatedStoryEl = document.createElement('div');
+        relatedStoryEl.className = 'bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md cursor-pointer';
+        relatedStoryEl.setAttribute('data-story-id', story.id);
+        
+        relatedStoryEl.innerHTML = `<div class="relative">
+                                  <img src="${story.image}" alt="${story.title}" class="w-full h-32 object-cover">
+                                  <div class="absolute top-2 left-2">
+                                    <span class="inline-block px-2 py-0.5 bg-primary/90 text-white text-xs rounded-full">
+                                      ${story.industry}
+                                    </span>
+                                  </div>
+                                  <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                                  <div class="absolute bottom-0 left-0 right-0 p-2">
+                                    <h3 class="text-white font-bold text-sm line-clamp-2">${story.title}</h3>
+                                  </div>
+                                </div>`;
+        
+        // 添加点击事件，跳转到详情页
+        relatedStoryEl.addEventListener('click', function() {
+          const storyId = parseInt(this.getAttribute('data-story-id'));
+          // 页面滑动到顶部
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          loadStoryDetail(storyId);
+        });
+        
+        relatedStoriesContainer.appendChild(relatedStoryEl);
+      });
+    }
+
+    // 加载状态管理
+    let isLoading = false;
+    let hasMoreStories = {}; // 改为对象，存储每个行业的加载状态
+    let currentPage = 1;
+    const storiesPerPage = 2;
+    
+    // 缓存已加载的故事列表，key为行业筛选器，value为已加载的故事数据
+    const loadedStoriesCache = {};
+    // 记录每个行业筛选器的加载状态
+    const industryLoadStatus = {};
+    
+    // 初始化页面时加载创业故事列表
+      document.addEventListener('DOMContentLoaded', function() {
+        // 初始化默认行业的加载状态
+        hasMoreStories['all'] = true;
+        renderStoriesList('all');
+        
+        // 实现倒计时功能
+        function updateCountdown() {
+          const hoursElement = document.getElementById('hours');
+          const minutesElement = document.getElementById('minutes');
+          const secondsElement = document.getElementById('seconds');
+          
+          if (!hoursElement || !minutesElement || !secondsElement) {
+            return;
+          }
+          
+          // 获取当前倒计时时间
+          let hours = parseInt(hoursElement.textContent);
+          let minutes = parseInt(minutesElement.textContent);
+          let seconds = parseInt(secondsElement.textContent);
+          
+          // 减少一秒
+          seconds -= 1;
+          
+          // 如果秒数小于0，分钟减1，秒数重置为59
+          if (seconds < 0) {
+            seconds = 59;
+            minutes -= 1;
+            
+            // 如果分钟小于0，小时减1，分钟重置为59
+            if (minutes < 0) {
+              minutes = 59;
+              hours -= 1;
+              
+              // 如果小时小于0，重置为0
+              if (hours < 0) {
+                hours = 0;
+                minutes = 0;
+                seconds = 0;
+              }
+            }
+          }
+          
+          // 更新显示，确保两位数显示
+          hoursElement.textContent = hours.toString().padStart(2, '0');
+          minutesElement.textContent = minutes.toString().padStart(2, '0');
+          secondsElement.textContent = seconds.toString().padStart(2, '0');
+        }
+        
+        // 每秒更新一次倒计时
+        setInterval(updateCountdown, 1000);
+      
+      // 添加行业筛选点击事件
+      const industryFilters = document.querySelectorAll('.industry-filter');
+      industryFilters.forEach(filter => {
+        filter.addEventListener('click', function() {
+          // 移除所有筛选器的active状态
+          industryFilters.forEach(f => f.classList.remove('active', 'bg-primary', 'text-white'));
+          industryFilters.forEach(f => f.classList.add('bg-gray-100', 'text-gray-600'));
+          
+          // 添加当前筛选器的active状态
+          this.classList.add('active', 'bg-primary', 'text-white');
+          this.classList.remove('bg-gray-100', 'text-gray-600');
+          
+          // 渲染筛选后的故事列表
+          const industry = this.getAttribute('data-industry');
+          
+          // 检查该行业是否已有缓存内容
+          if (loadedStoriesCache[industry]) {
+            // 有缓存，直接显示缓存的内容
+            const container = document.getElementById('stories-container');
+            container.innerHTML = loadedStoriesCache[industry].html;
+            
+            // 恢复加载状态
+              currentPage = loadedStoriesCache[industry].currentPage;
+              hasMoreStories[industry] = loadedStoriesCache[industry].hasMoreStories;
+            
+            // 更新无更多内容提示
+            let noMoreElement = document.getElementById('no-more');
+            if (!noMoreElement && !hasMoreStories[industry]) {
+              noMoreElement = document.createElement('div');
+              noMoreElement.id = 'no-more';
+              noMoreElement.className = 'text-gray-400 text-sm py-6 text-center hidden';
+              container.parentNode.insertBefore(noMoreElement, document.getElementById('loading-indicator').nextSibling);
+            }
+            
+            if (noMoreElement) {
+              if (!hasMoreStories[industry]) {
+                noMoreElement.textContent = '更多精彩案例正在赶来中，敬请期待！😉';
+                noMoreElement.classList.remove('hidden');
+              } else {
+                noMoreElement.classList.add('hidden');
+              }
+            }
+          } else {
+            // 无缓存，重置状态并加载
+            currentPage = 1;
+            hasMoreStories[industry] = true;
+            renderStoriesList(industry);
+          }
+        });
+      });
+      
+      // 添加滚动事件监听，实现滚动加载更多
+      window.addEventListener('scroll', handleScroll);
+      
+      // 添加底部按钮点击事件
+      function redirectToAdPlatform() {
+        // 跳转到广告投放平台
+        window.location.href = 'https://sso.e.qq.com/login/hub?display_list=false&service_tag=1&sso_redirect_uri=https%3A%2F%2Fad.qq.com%2Fap%2Fsso%2Fcheck_ticket%3Fredirect_url%3Dhttps%253A%252F%252Fad.qq.com%252Faccount-center%252Fregister%253Fsource%253D2104090%2526from%253D%2526is_mobile%253D1%2526click_id%253D%2526referer%253D&report_project_tag=am&mini_query=%3Fsource%3D2104090%26from%3D%26is_mobile%3D1%26click_id%3D%26referer%3D';
+      }
+      
+      // 为两个按钮添加相同的点击事件
+      document.getElementById('go-to-ad-platform').addEventListener('click', redirectToAdPlatform);
+      document.getElementById('go-to-platform-btn').addEventListener('click', redirectToAdPlatform);
+      
+      // 为所有福利卡片按钮添加相同的点击事件
+      document.querySelectorAll('.benefit-button').forEach(button => {
+        button.addEventListener('click', redirectToAdPlatform);
+      });
+    });
+    
+    // 处理滚动事件，实现滚动到底部加载更多
+    function handleScroll() {
+        const scrollHeight = document.documentElement.scrollHeight;
+        const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        const clientHeight = document.documentElement.clientHeight;
+        
+        // 获取当前激活的行业筛选器
+        const activeFilter = document.querySelector('.industry-filter.active');
+        const industry = activeFilter ? activeFilter.getAttribute('data-industry') : 'all';
+        
+        // 当滚动到底部附近且不在加载中且当前行业还有更多数据时，加载更多
+        if (scrollTop + clientHeight >= scrollHeight - 100 && !isLoading && hasMoreStories[industry]) {
+          loadMoreStories();
+        }
+      }
+    
+    // 加载更多故事
+    function loadMoreStories() {
+      // 获取当前激活的行业筛选器
+      const activeFilter = document.querySelector('.industry-filter.active');
+      const industry = activeFilter ? activeFilter.getAttribute('data-industry') : 'all';
+      
+      // 渲染下一页的故事列表
+      renderStoriesList(industry, true);
+    }
+
+    // 渲染故事列表
+    function renderStoriesList(industry, isAppend = false) {
+      const container = document.getElementById('stories-container');
+      const loadingContainer = document.getElementById('loading-indicator');
+      
+      // 检查该行业是否已经加载完成
+      if (!isAppend && industryLoadStatus[industry] && industryLoadStatus[industry].loadedComplete) {
+        // 已经加载完成，显示加载完毕提示，不需要再次加载
+        if (loadedStoriesCache[industry]) {
+          container.innerHTML = loadedStoriesCache[industry].html;
+          
+          // 更新无更多内容提示
+          let noMoreElement = document.getElementById('no-more');
+          if (!noMoreElement) {
+            noMoreElement = document.createElement('div');
+            noMoreElement.id = 'no-more';
+            noMoreElement.className = 'text-gray-400 text-sm py-6 text-center hidden';
+            container.parentNode.insertBefore(noMoreElement, loadingContainer.nextSibling);
+          }
+          noMoreElement.textContent = '更多精彩案例正在赶来中，敬请期待！😉';
+          noMoreElement.classList.remove('hidden');
+        }
+        return;
+      }
+      
+      // 显示加载状态
+      if (isAppend) {
+        isLoading = true;
+        loadingContainer.innerHTML = '<div class="flex justify-center items-center py-4"><div class="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mr-2"></div><span class="text-sm text-gray-500">加载更多内容...</span></div>';
+        loadingContainer.classList.remove('hidden');
+      } else {
+        // 非追加模式，清空容器
+        container.innerHTML = '';
+        // 显示加载指示器
+        loadingContainer.innerHTML = '<div class="flex justify-center items-center py-4"><div class="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mr-2"></div><span class="text-sm text-gray-500">加载更多内容...</span></div>';
+        loadingContainer.classList.remove('hidden');
+      }
+      
+      // 模拟网络延迟
+      setTimeout(() => {
+        let filteredStories = storiesData;
+        if (industry !== 'all') {
+          filteredStories = storiesData.filter(story => story.industryKey === industry);
+        }
+        
+        // 分页处理
+        const startIndex = isAppend ? (currentPage - 1) * storiesPerPage : 0;
+        const endIndex = isAppend ? currentPage * storiesPerPage : storiesPerPage;
+        const paginatedStories = filteredStories.slice(startIndex, endIndex);
+        
+        // 检查是否还有更多数据
+        if (endIndex >= filteredStories.length) {
+          hasMoreStories[industry] = false;
+        } else {
+          currentPage++;
+        }
+      
+      // 如果没有更多故事但仍需要显示内容，则使用随机重复故事
+      let storiesToRender = paginatedStories;
+      if (storiesToRender.length === 0 && filteredStories.length > 0) {
+        // 从原故事池中随机选择一些故事来填充
+        const shuffledStories = [...filteredStories].sort(() => 0.5 - Math.random());
+        storiesToRender = shuffledStories.slice(0, storiesPerPage);
+        
+        // 为每个随机故事生成新的ID，避免重复
+        storiesToRender = storiesToRender.map(story => ({
+          ...story,
+          id: story.id + Math.floor(Math.random() * 1000) // 添加随机数避免ID重复
+        }));
+      }
+        
+        storiesToRender.forEach(story => {
+          const storyEl = document.createElement('div');
+          storyEl.className = 'bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md cursor-pointer';
+          storyEl.setAttribute('data-story-id', story.id);
+          
+          storyEl.innerHTML = `<div class="relative">
+                            <img src="${story.image}" alt="${story.title}" class="w-full h-40 object-cover">
+                            <div class="absolute top-2 left-2">
+                              <span class="inline-block px-2 py-0.5 bg-primary/90 text-white text-xs rounded-full">
+                                ${story.industry}
+                              </span>
+                            </div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 right-0 p-3">
+                              <h3 class="text-white font-bold text-lg mb-1">${story.title}</h3>
+                              <div class="flex space-x-3">
+                                <div class="flex items-center text-white/90 text-xs">
+                                  <i class="fa fa-money mr-1"></i>
+                                  <span>${story.cost}</span>
+                                </div>
+                                <div class="flex items-center text-white/90 text-xs">
+                                  <i class="fa fa-clock-o mr-1"></i>
+                                  <span>${story.period}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="p-3 flex items-center justify-between">
+                            <div class="flex items-center">
+                              <img src="${story.owner.avatar}" alt="${story.owner.name}" class="w-8 h-8 rounded-full mr-2">
+                              <div>
+                                <p class="text-sm font-medium text-dark">${story.owner.name}</p>
+                                <p class="text-xs text-gray-500">${story.owner.business}</p>
+                              </div>
+                            </div>
+                            <div class="flex items-center text-primary text-sm">
+                              <span>${story.benefitTag}</span>
+                              <i class="fa fa-angle-right ml-1"></i>
+                            </div>
+                          </div>`;
+          
+          // 添加点击事件，跳转到详情页
+          storyEl.addEventListener('click', function() {
+            const storyId = parseInt(this.getAttribute('data-story-id'));
+            // 页面滑动到顶部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            listHeader.classList.add('hidden');
+            detailHeader.classList.remove('hidden');
+            listPage.classList.add('hidden');
+            detailPage.classList.remove('hidden');
+            loadStoryDetail(storyId);
+          });
+          
+          container.appendChild(storyEl);
+        });
+        
+        // 更新加载状态
+        isLoading = false;
+        loadingContainer.innerHTML = '';
+        loadingContainer.classList.add('hidden');
+        
+        // 缓存当前加载的内容
+        if (!isAppend) {
+          loadedStoriesCache[industry] = {
+            html: container.innerHTML,
+            currentPage: currentPage,
+            hasMoreStories: hasMoreStories[industry]
+          };
+        
+          // 更新行业加载状态
+          industryLoadStatus[industry] = {
+            loadedComplete: !hasMoreStories[industry]
+          };
+        } else {
+          // 如果是追加模式，更新缓存
+          if (loadedStoriesCache[industry]) {
+            loadedStoriesCache[industry].html = container.innerHTML;
+            loadedStoriesCache[industry].currentPage = currentPage;
+            loadedStoriesCache[industry].hasMoreStories = hasMoreStories[industry];
+            
+            // 更新行业加载状态
+            industryLoadStatus[industry].loadedComplete = !hasMoreStories[industry];
+          }
+        }
+        
+        // 更新无更多内容提示
+        let noMoreElement = document.getElementById('no-more');
+        if (!noMoreElement) {
+          noMoreElement = document.createElement('div');
+          noMoreElement.id = 'no-more';
+          noMoreElement.className = 'text-gray-400 text-sm py-6 text-center hidden';
+          container.parentNode.insertBefore(noMoreElement, loadingContainer.nextSibling);
+        }
+        
+        // 根据当前行业的加载状态更新提示
+        if (!hasMoreStories[industry]) {
+          noMoreElement.textContent = '更多精彩案例正在赶来中，敬请期待！😉';
+          noMoreElement.classList.remove('hidden');
+        } else {
+          noMoreElement.classList.add('hidden');
+        }
+      }, 500);
+    }
+  </script>
+</body>
+</html>

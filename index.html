@@ -197,7 +197,7 @@
           <div class="border-b border-gray-100">
             <div class="w-full relative">
               <div class="absolute inset-0 bg-black opacity-20 z-0"></div>
-              <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/6e898b57d5314c268700d3b77c36136e~tplv-a9rns2rl98-image.image?rcl=2025090814521629DEC04EACE0E72A4D43&rk3s=8e244e95&rrcfp=2609e108&x-expires=1757919140&x-signature=liQpl0%2FVuEoOEmn0jBlUD4GNz5o%3D" class="w-full h-32 object-cover" alt="小客之家背景">
+              <img src="https://picsum.photos/id/42/600/400" class="w-full h-32 object-cover" alt="小客之家背景">
               <div class="absolute inset-0 p-4 z-10 flex flex-col justify-center">
                 <h2 class="text-xl font-bold mb-2 text-white">腾讯广告小客之家</h2>
                 <p class="text-sm text-white">让每一个小生意都能被看见</p>
@@ -241,7 +241,7 @@
           <div class="border-b border-gray-100">
             <div class="w-full relative">
               <div class="absolute inset-0 bg-black opacity-20 z-0"></div>
-              <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/f226f18e9cba4526827a52e93aeb512a~tplv-a9rns2rl98-image.image?rcl=202509081405011C4E1B8DA8E54508F5AD&rk3s=8e244e95&rrcfp=2609e108&x-expires=1757916305&x-signature=OdqKCUkgnKAaWxuWlIcrnIEsk%2Bs%3D" class="w-full h-32 object-cover" alt="趁手工具背景">
+              <img src="https://picsum.photos/id/60/600/400" class="w-full h-32 object-cover" alt="趁手工具背景">
               <div class="absolute inset-0 p-4 z-10 flex flex-col justify-center">
                 <h2 class="text-xl font-bold mb-1 text-white">趁手工具推荐</h2>
                 <p class="text-sm mb-1 text-white">按你的"痛点"找工具，简单好用，花钱有数</p>
@@ -256,7 +256,7 @@
                 <p class="text-base">本地推：精准触达店铺周边3-10公里潜在客户</p>
               </div>
               <div class="ml-2">
-                <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/f226f18e9cba4526827a52e93aeb512a~tplv-a9rns2rl98-image.image?rcl=202509081405011C4E1B8DA8E54508F5AD&rk3s=8e244e95&rrcfp=2609e108&x-expires=1757916305&x-signature=OdqKCUkgnKAaWxuWlIcrnIEsk%2Bs%3D" alt="本地推工具" class="w-16 h-16 rounded">
+                <img src="https://picsum.photos/seed/localmarketing2/160/160" alt="本地推工具" class="w-16 h-16 rounded">
               </div>
             </div>
           </div>
@@ -336,9 +336,9 @@
           <span class="text-base">定制投放方案</span>
         </div>
         <!-- 免费素材制作 -->
-        <div class="dropdown-menu-item h-10 flex items-center justify-center border-b border-gray-100">
-          <span class="text-base">免费素材制作</span>
-        </div>
+      <div class="dropdown-menu-item h-10 flex items-center justify-center border-b border-gray-100" id="free-material-making">
+        <span class="text-base">免费素材制作</span>
+      </div>
         <!-- 1V1专属顾问 -->
         <div class="dropdown-menu-item h-10 flex items-center justify-center">
           <span class="text-base">1V1专属顾问</span>
@@ -626,132 +626,102 @@
               </div>
           </section>
 
-          <!-- 福利区域 - 固定一排两个 -->
-          <section class="mt-5 px-4">
-              <h2 class="text-xl font-bold mb-4 flex items-center text-dark">
-                  <span class="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-2">
-                      <i class="fa fa-gift"></i>
-                  </span>
-                  新客专享福利
-              </h2>
-              
-              <!-- 使用grid-cols-2确保在所有屏幕尺寸下都是两列 -->
-              <div class="grid grid-cols-2 gap-3">
-                  <!-- 福利1 - 首充返现 -->
-                  <div class="bg-benefit-primary text-white rounded-xl shadow-md overflow-hidden p-4 福利-card-hover">
-                      <div class="flex justify-between items-start">
-                          <div class="flex flex-col h-full flex-1 w-full">
-                              <h3 class="font-bold text-base">首充返现</h3>
-                              <span class="inline-block bg-white/20 text-white py-0.5 rounded-full text-xs whitespace-nowrap mt-1 w-[6em] text-center">
-                                  最高返20%
-                              </span>
-                              <p class="text-white/90 mt-1 text-xs pr-2">首次充值满1000立返200，多充多返</p>
-                              <div class="mt-auto inline-block bg-white text-benefit-primary py-0.5 rounded-full text-xs font-medium benefit-button w-[6em] text-center">
-                                  立即领取
-                              </div>
-                          </div>
-                          <div class="text-4xl opacity-20 -mt-2 -mr-2 flex-shrink-0">
-                              <i class="fa fa-money"></i>
-                          </div>
-                      </div>
-                  </div>
-                  
-                  <!-- 福利2 - 首月投放9折 -->
-                  <div class="bg-benefit-secondary text-white rounded-xl shadow-md overflow-hidden p-4 福利-card-hover">
-                      <div class="flex justify-between items-start">
-                          <div class="flex flex-col h-full flex-1 w-full">
-                              <h3 class="font-bold text-base">首月投放9折</h3>
-                              <span class="inline-block bg-white/20 text-white py-0.5 rounded-full text-xs whitespace-nowrap mt-1 w-[6em] text-center">
-                                  限时折扣
-                              </span>
-                              <p class="text-white/90 mt-1 text-xs pr-2">新客专享首月广告投放9折优惠，超值划算，限时速抢</p>
-                              <div class="mt-auto inline-block bg-white text-benefit-secondary py-0.5 rounded-full text-xs font-medium benefit-button w-[6em] text-center">
-                                  立即领取
-                              </div>
-                          </div>
-                          <div class="text-4xl opacity-20 -mt-2 -mr-2 flex-shrink-0">
-                              <i class="fa fa-percent"></i>
-                          </div>
-                      </div>
-                  </div>
-                  
-                  <!-- 福利3 - 专业指导 -->
-                  <div class="bg-benefit-tertiary text-dark rounded-xl shadow-md overflow-hidden p-4 福利-card-hover">
-                      <div class="flex justify-between items-start">
-                          <div class="flex flex-col h-full flex-1 w-full">
-                              <h3 class="font-bold text-base w-full">1对1专家指导</h3>
-                              <span class="inline-block bg-dark/10 text-dark py-0.5 rounded-full text-xs whitespace-nowrap mt-1 w-[6em] text-center">
-                                  价值3000元
-                              </span>
-                              <p class="text-dark/80 mt-1 text-xs pr-2 w-full">专属运营顾问7天全程指导，从0到1掌握投放技巧</p>
-                              <div class="mt-auto inline-block bg-white text-benefit-secondary py-0.5 rounded-full text-xs font-medium benefit-button w-[6em] text-center">
-                                  立即领取
-                              </div>
-                          </div>
-                          <div class="text-4xl opacity-20 -mt-2 -mr-2 flex-shrink-0">
-                              <i class="fa fa-user"></i>
-                          </div>
-                      </div>
-                  </div>
-                  
-                  <!-- 福利4 - 课程礼包 -->
-                  <div class="bg-benefit-quaternary text-white rounded-xl shadow-md overflow-hidden p-4 福利-card-hover">
-                      <div class="flex justify-between items-start">
-                          <div class="flex flex-col h-full flex-1 w-full">
-                              <h3 class="font-bold text-base">精英课程礼包</h3>
-                              <span class="inline-block bg-white/20 text-white py-0.5 rounded-full text-xs whitespace-nowrap mt-1 w-[6em] text-center">
-                                  价值1999元
-                              </span>
-                              <p class="text-white/90 mt-1 text-xs pr-2">包含15节精品课程，从入门到精通广告投放全攻略</p>
-                              <div class="mt-auto inline-block bg-white text-benefit-quaternary py-0.5 rounded-full text-xs font-medium benefit-button w-[6em] text-center">
-                                  立即领取
-                              </div>
-                          </div>
-                          <div class="text-4xl opacity-20 -mt-2 -mr-2 flex-shrink-0">
-                              <i class="fa fa-graduation-cap"></i>
-                          </div>
-                      </div>
-                  </div>
-                  
-                  <!-- 福利5 - 素材制作 -->
-                  <div class="bg-benefit-quinary text-white rounded-xl shadow-md overflow-hidden p-4 福利-card-hover">
-                      <div class="flex justify-between items-start">
-                          <div class="flex flex-col h-full flex-1 w-full">
-                              <h3 class="font-bold text-base">素材制作</h3>
-                              <span class="inline-block bg-white/20 text-white py-0.5 rounded-full text-xs whitespace-nowrap mt-1 w-[6em] text-center">
-                                  免费获取
-                              </span>
-                              <p class="text-white/90 mt-1 text-xs pr-2">免费10套优质广告素材设计，专业团队制作</p>
-                              <div class="mt-auto inline-block bg-white text-benefit-quinary py-0.5 rounded-full text-xs font-medium benefit-button w-[6em] text-center">
-                                  立即领取
-                              </div>
-                          </div>
-                          <div class="text-4xl opacity-20 -mt-2 -mr-2 flex-shrink-0">
-                              <i class="fa fa-picture-o"></i>
-                          </div>
-                      </div>
-                  </div>
-                  
-                  <!-- 福利6 - 商家社群 -->
-                  <div class="bg-benefit-amber text-white rounded-xl shadow-md overflow-hidden p-4 福利-card-hover">
-                      <div class="flex justify-between items-start">
-                          <div class="flex flex-col h-full flex-1 w-full">
-                              <h3 class="font-bold text-base">商家社群</h3>
-                              <span class="inline-block bg-white/20 text-white py-0.5 rounded-full text-xs whitespace-nowrap mt-1 w-[6em] text-center">
-                                  顶级资源
-                              </span>
-                              <p class="text-white/90 mt-1 text-xs pr-2">加入顶级商家交流圈，共享资源与成功经验</p>
-                              <div class="mt-auto inline-block bg-white text-benefit-amber py-0.5 rounded-full text-xs font-medium benefit-button w-[6em] text-center">
-                                  立即加入
-                              </div>
-                          </div>
-                          <div class="text-4xl opacity-20 -mt-2 -mr-2 flex-shrink-0">
-                              <i class="fa fa-users"></i>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </section>
+           <!-- 福利区域 - 固定一排两个，移动端也保持两列 -->
+        <section class="mt-5 px-4">
+            <h2 class="text-xl font-bold mb-4 flex items-center text-dark">
+                <span class="bg-benefit-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-2">
+                    <i class="fa fa-gift"></i>
+                </span>
+                新客专享福利
+            </h2>
+            
+            <!-- 使用grid-cols-2确保在所有屏幕尺寸下都是两列 -->
+            <div class="grid grid-cols-2 gap-3">
+                <!-- 福利1 - 免费视频素材 -->
+                <div class="bg-benefit-primary text-white rounded-xl shadow-md overflow-hidden p-4 福利-card-hover">
+                    <div class="flex justify-between items-start">
+                        <div class="flex flex-col h-full">
+                            <div>
+                                <h3 class="font-bold text-base mb-2">免费视频素材</h3>
+                                <span class="block bg-white/20 text-white w-[7em] text-center py-0.5 rounded-full text-xs whitespace-nowrap">
+                                    15条60秒+
+                                </span>
+                            </div>
+                            <p class="text-white/90 mt-2 text-xs">热门行业爆款视频模板，专业制作提升广告转化效果</p>
+                            <div class="mt-auto inline-block bg-white text-benefit-primary w-[6em] text-center py-2 rounded-full text-xs font-medium mt-6 benefit-button">
+                                立即领取
+                            </div>
+                        </div>
+                        <div class="text-3xl opacity-20">
+                            <i class="fa fa-film"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 福利2 - 账号违规体检 -->
+                <div class="bg-benefit-secondary text-white rounded-xl shadow-md overflow-hidden p-4 福利-card-hover">
+                    <div class="flex justify-between items-start">
+                        <div class="flex flex-col h-full">
+                            <div>
+                                <h3 class="font-bold text-base mb-2">账号违规体检</h3>
+                                <span class="block bg-white/20 text-white w-[7em] text-center py-0.5 rounded-full text-xs whitespace-nowrap">
+                                    免费专家检测
+                                </span>
+                            </div>
+                            <p class="text-white/90 mt-2 text-xs">专业运营顾问全面检查账号健康状况，规避违规风险</p>
+                            <div class="mt-auto inline-block bg-white text-benefit-secondary w-[6em] text-center py-2 rounded-full text-xs font-medium mt-6 benefit-button">
+                                立即预约
+                            </div>
+                        </div>
+                        <div class="text-3xl opacity-20">
+                            <i class="fa fa-medkit"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 福利3 - 直播大屏诊断 -->
+                <div class="bg-benefit-tertiary text-dark rounded-xl shadow-md overflow-hidden p-4 福利-card-hover">
+                    <div class="flex justify-between items-start">
+                        <div class="flex flex-col h-full">
+                            <div>
+                                <h3 class="font-bold text-base mb-2">直播大屏诊断</h3>
+                                <span class="block bg-dark/10 text-dark w-[7em] text-center py-0.5 rounded-full text-xs whitespace-nowrap">
+                                    免费专家分析
+                                </span>
+                            </div>
+                            <p class="text-dark/80 mt-2 text-xs">直播数据全面分析解读，专家指导优化直播策略</p>
+                            <div class="mt-auto inline-block bg-dark text-benefit-tertiary w-[6em] text-center py-2 rounded-full text-xs font-medium mt-6 benefit-button">
+                                立即预约
+                            </div>
+                        </div>
+                        <div class="text-3xl opacity-20">
+                            <i class="fa fa-line-chart"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 福利4 - 营销专家陪跑 -->
+                <div class="bg-benefit-quaternary text-white rounded-xl shadow-md overflow-hidden p-4 福利-card-hover">
+                    <div class="flex justify-between items-start">
+                        <div class="flex flex-col h-full">
+                            <div>
+                                <h3 class="font-bold text-base mb-2">营销专家陪跑</h3>
+                                <span class="block bg-white/20 text-white w-[7em] text-center py-0.5 rounded-full text-xs whitespace-nowrap">
+                                    1v1全程指导
+                                </span>
+                            </div>
+                            <p class="text-white/90 mt-2 text-xs">微信豆/全域通/ADQ 一站式咨询，专家全程指导</p>
+                            <div class="mt-auto inline-block bg-white text-benefit-quaternary w-[6em] text-center py-2 rounded-full text-xs font-medium mt-6 benefit-button">
+                                立即预约
+                            </div>
+                        </div>
+                        <div class="text-3xl opacity-20">
+                            <i class="fa fa-user-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
           
           <!-- 信任背书 -->
           <section class="mt-5 px-4">
@@ -945,9 +915,14 @@
     });
 
     // 点击菜单内部不关闭菜单
-    toolsDropdown.addEventListener('click', function(e) {
-      e.stopPropagation();
-    });
+      toolsDropdown.addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+      
+      // 免费素材制作点击事件
+      document.getElementById('free-material-making').addEventListener('click', function() {
+        window.location.href = '素材创作工具.html';
+      });
     
     benefitsDropdown.addEventListener('click', function(e) {
       e.stopPropagation();
@@ -1153,7 +1128,7 @@
         title: "本地推：精准触达店铺周边3-10公里潜在客户",
         industry: "本地服务",
         industryKey: "service",
-        image: "https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/f226f18e9cba4526827a52e93aeb512a~tplv-a9rns2rl98-image.image?rcl=202509081405011C4E1B8DA8E54508F5AD&rk3s=8e244e95&rrcfp=2609e108&x-expires=1757916305&x-signature=OdqKCUkgnKAaWxuWlIcrnIEsk%2Bs%3D",
+        image: "https://picsum.photos/seed/localmarketing3/800/400",
         cost: "3000元/月",
         customerCost: "¥25/单",
         period: "10天",
@@ -1644,7 +1619,7 @@
           title: "宠物美容店的春天：从无人问津到门庭若市",
           industry: "本地服务",
           industryKey: "service",
-          image: "https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/f226f18e9cba4526827a52e93aeb512a~tplv-a9rns2rl98-image.image?rcl=202509081405011C4E1B8DA8E54508F5AD&rk3s=8e244e95&rrcfp=2609e108&x-expires=1757916305&x-signature=OdqKCUkgnKAaWxuWlIcrnIEsk%2Bs%3D",
+          image: "https://picsum.photos/seed/localmarketing4/800/400",
           cost: "4000元/月",
           customerCost: "¥40/单",
           period: "15天",
@@ -2068,11 +2043,32 @@
         window.location.href = 'https://sso.e.qq.com/login/hub?display_list=false&service_tag=1&sso_redirect_uri=https%3A%2F%2Fad.qq.com%2Fap%2Fsso%2Fcheck_ticket%3Fredirect_url%3Dhttps%253A%252F%252Fad.qq.com%252Faccount-center%252Fregister%253Fsource%253D2104090%2526from%253D%2526is_mobile%253D1%2526click_id%253D%2526referer%253D&report_project_tag=am&mini_query=%3Fsource%3D2104090%26from%3D%26is_mobile%3D1%26click_id%3D%26referer%3D';
       }
       
+      // 福利卡片按钮点击处理
+      function handleBenefitCardClick(event) {
+        // 获取福利卡片内容
+        const button = event.target.closest('.benefit-button');
+        const card = button.closest('[class*="bg-benefit-"]');
+        const benefitName = card.querySelector('h3').textContent;
+        
+        // 显示福利详情提示或执行其他操作
+        alert(`您正在领取福利：${benefitName}\n福利详情页正在跳转中...`);
+        
+        // 这里可以根据福利类型跳转到不同的详情页面
+        // 例如：
+        // if (benefitName.includes('视频素材')) {
+        //   window.location.href = 'https://example.com/benefits/video';
+        // } else if (benefitName.includes('账号违规')) {
+        //   window.location.href = 'https://example.com/benefits/account';
+        // } else {
+        //   window.location.href = 'https://example.com/benefits';
+        // }
+      }
+      
       // 为两个按钮添加相同的点击事件
       document.getElementById('go-to-ad-platform').addEventListener('click', redirectToAdPlatform);
       document.getElementById('go-to-platform-btn').addEventListener('click', redirectToAdPlatform);
       
-      // 为所有福利卡片按钮添加相同的点击事件
+      // 为所有福利卡片按钮添加跳转事件
       document.querySelectorAll('.benefit-button').forEach(button => {
         button.addEventListener('click', redirectToAdPlatform);
       });

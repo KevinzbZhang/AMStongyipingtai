@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>开户落地页 - 腾讯广告</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#286BEF', // 40.107.239
+                        lightBlueBg: '#EFF4FE', // 239.244.254
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .sticky-bottom {
+                position: sticky;
+                bottom: 0;
+                z-index: 100;
+            }
+        }
+    </style>
+</head>
+<body class="bg-lightBlueBg font-sans">
+    <!-- 顶部图片 -->
+    <div class="w-full">
+        <img src="kaihu-tou.png" alt="开户落地页顶部图" class="w-full h-auto">
+    </div>
+
+    <!-- 中间优势区域 -->
+    <section class="py-12 px-4 max-w-6xl mx-auto">
+        <!-- 权益部分 -->
+        <div class="mb-10">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="text-primary mr-2">●</span> 新商家权益
+                <span class="ml-2 text-xs bg-red-500 text-white px-2 py-1 rounded-full">限时</span>
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="flex items-center p-4 bg-white rounded-lg shadow-sm">
+                    <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="fa fa-bolt"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="font-medium">千元限时流量扶持</h3>
+                        <p class="text-sm text-gray-600">限时享最高1000元流量补帖</p>
+                    </div>
+                </div>
+                <div class="flex items-center p-4 bg-white rounded-lg shadow-sm">
+                    <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="fa fa-users"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="font-medium">免费代运营</h3>
+                        <p class="text-sm text-gray-600">专业运营团队免费提供7天代运营服务</p>
+                    </div>
+                </div>
+                <div class="flex items-center p-4 bg-white rounded-lg shadow-sm">
+                    <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="fa fa-shield"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="font-medium">不成交不花钱</h3>
+                        <p class="text-sm text-gray-600">订单未成交不收取任何服务费用</p>
+                    </div>
+                </div>
+                <div class="flex items-center p-4 bg-white rounded-lg shadow-sm">
+                    <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="fa fa-picture-o"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="font-medium">每天送10张优质素材</h3>
+                        <p class="text-sm text-gray-600">专业设计师每日提供10张精美商品素材</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 工具部分 -->
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="text-primary mr-2">●</span> 免费好工具
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-4 bg-white rounded-lg shadow-sm">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="fa fa-video-camera text-primary"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h4 class="font-medium">一键生成同款视频</h4>
+                            <p class="text-sm text-gray-600">AI智能分析热门视频，快速生成相似风格内容</p>
+                        </div>
+                    </div>
+                    <div class="mt-1 pt-[5px] border-t border-gray-100">
+                        <a href="#" class="block text-primary text-sm font-medium pb-[2px] text-center rounded transition-colors hover:text-primary/80 active:text-primary/60 touch-manipulation focus:outline-none">
+                            立即体验
+                        </a>
+                    </div>
+                </div>
+                <div class="p-4 bg-white rounded-lg shadow-sm">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="fa fa-heartbeat text-primary"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h4 class="font-medium">直播建议诊断</h4>
+                            <p class="text-sm text-gray-600">智能分析直播数据，提供专业优化建议</p>
+                        </div>
+                    </div>
+                    <div class="mt-1 pt-[5px] border-t border-gray-100">
+                        <a href="#" class="block text-primary text-sm font-medium pb-[2px] text-center rounded transition-colors hover:text-primary/80 active:text-primary/60 touch-manipulation focus:outline-none">
+                            立即体验
+                        </a>
+                    </div>
+                </div>
+                <div class="p-4 bg-white rounded-lg shadow-sm">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="fa fa-shield text-primary"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h4 class="font-medium">小店违规诊断</h4>
+                            <p class="text-sm text-gray-600">全面检查店铺运营合规性，提前预警违规风险</p>
+                        </div>
+                    </div>
+                    <div class="mt-1 pt-[5px] border-t border-gray-100">
+                        <a href="#" class="block text-primary text-sm font-medium pb-[2px] text-center rounded transition-colors hover:text-primary/80 active:text-primary/60 touch-manipulation focus:outline-none">
+                            立即体验
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 底部吸底按钮区域 -->
+    <div class="bg-white px-4 py-4 shadow-lg sticky-bottom">
+        <div class="max-w-4xl mx-auto">
+            <p class="text-center text-gray-600 mb-3 text-sm">立即开户并添加官方顾问，免费获取专属服务</p>
+            <a href="#" class="block w-full py-3 px-6 bg-primary text-white font-bold text-center rounded-full hover:bg-primary/90 transition-colors duration-300">
+                前往账号认证
+            </a>
+        </div>
+    </div>
+</body>
+</html>

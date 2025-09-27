@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小店合规诊断</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        accent: '#FF7D00',
+                        neutral: '#F5F7FA',
+                        dark: '#1D2129',
+                        light: '#F2F3F5'
+                    },
+                    fontFamily: {
+                        sans: ['PingFang SC', 'Helvetica Neue', 'Arial', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .transition-height {
+                transition: max-height 0.3s ease-out;
+            }
+        }
+    </style>
+</head>
+<body class="bg-neutral min-h-screen font-sans text-dark">
+    <!-- 顶部导航栏 -->
+    <header class="fixed top-0 left-0 right-0 bg-white shadow-sm z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="text-primary font-bold text-xl w-full text-center">小店合规诊断</div>
+            <button class="text-gray-500 hover:text-primary absolute right-4">
+                <i class="fa fa-question-circle-o text-xl"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="container mx-auto px-4 pt-16 pb-20">
+        <!-- 界面1：上传违规判罚图片 -->
+        <section id="upload-section" class="py-6">
+            <!-- 产品简介 -->
+            <div class="bg-primary/10 rounded-xl p-4 mb-6">
+                <h2 class="text-primary font-bold text-lg mb-2">为什么需要合规诊断？</h2>
+                <ul class="text-sm text-gray-700 space-y-1">
+                    <li class="flex items-start">
+                        <i class="fa fa-check-circle text-secondary mt-1 mr-2"></i>
+                        <span>快速分析违规原因，避免重复犯错</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fa fa-check-circle text-secondary mt-1 mr-2"></i>
+                        <span>专业合规建议，降低经营风险</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fa fa-check-circle text-secondary mt-1 mr-2"></i>
+                        <span>提供改进方案，提升店铺运营质量</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 上传区域和预览区域容器 -->
+                <div id="upload-section-container">
+                    <!-- 上传区域 -->
+                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center mb-6 bg-white hover:border-primary transition-colors cursor-pointer" id="upload-area">
+                        <div class="upload-icon mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                            <i class="fa fa-cloud-upload text-primary text-2xl"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">上传违规判罚截图</h3>
+                        <p class="text-gray-500 text-sm mb-4">支持JPG、PNG格式，大小不超过5MB</p>
+                        <p class="text-xs text-gray-400 mb-4">系统将自动识别：违规账户、编号、时间及节点</p>
+                        <div class="space-y-3">
+                            <button id="upload-btn" class="bg-primary text-white py-2.5 px-6 rounded-lg font-medium shadow-md hover:bg-primary/90 transition-all text-sm w-full">
+                                选择图片
+                            </button>
+                            <button id="view-sample-btn" class="bg-gray-100 text-gray-600 py-2.5 px-6 rounded-lg font-medium hover:bg-gray-200 transition-all text-sm w-full">
+                                <i class="fa fa-eye mr-1"></i> 点击查看示意图
+                            </button>
+                        </div>
+                        <input type="file" id="file-input" accept="image/*" class="hidden" />
+                    </div>
+                    
+                    <!-- 上传后的预览（默认隐藏） -->
+                    <div id="preview-container" class="hidden">
+                        <div class="relative rounded-xl overflow-hidden border border-gray-200 mb-6">
+                            <img id="preview-image" src="" alt="违规判罚预览图" class="w-full h-auto max-h-[300px] object-contain">
+                            <button id="remove-image" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/50 flex items-center justify-center text-white hover:bg-black/70 transition-colors">
+                                <i class="fa fa-times text-sm"></i>
+                            </button>
+                        </div>
+                        <button id="to-result-btn" class="w-full bg-secondary text-white py-2.5 px-6 rounded-lg font-medium shadow-md hover:bg-secondary/90 transition-all text-sm">
+                            开始诊断分析
+                        </button>
+                    </div>
+                </div>
+            
+            <!-- 上传指南 -->
+            <div class="bg-white rounded-xl p-4 mb-6">
+                <h3 class="font-bold text-base mb-3 flex items-center">
+                    <i class="fa fa-lightbulb-o text-accent mr-2"></i>
+                    上传小贴士
+                </h3>
+                <ul class="text-sm text-gray-600 space-y-2">
+                    <li class="flex items-start">
+                        <span class="bg-primary/10 text-primary rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 mt-0.5 flex-shrink-0">1</span>
+                        <span>确保截图清晰，包含完整的违规信息</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="bg-primary/10 text-primary rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 mt-0.5 flex-shrink-0">2</span>
+                        <span>尽量截取完整的违规通知页面</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="bg-primary/10 text-primary rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 mt-0.5 flex-shrink-0">3</span>
+                        <span>可同时上传多张相关截图提高诊断准确性</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 界面2：展示合规诊断结果 -->
+        <section id="result-section" class="py-6 hidden">
+            <!-- 诊断概要 -->
+            <div class="bg-white rounded-xl p-5 mb-6 shadow-sm border border-gray-100">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h2 class="font-bold text-lg">违规诊断结果</h2>
+                        <p class="text-sm text-gray-500 mt-1">2023年10月15日 14:30 诊断</p>
+                    </div>
+                    <span class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full">需处理</span>
+                </div>
+
+                <!-- 关键信息 -->
+                <div class="grid grid-cols-2 gap-3 mb-4 text-sm">
+                    <div class="bg-light rounded-lg p-3">
+                        <p class="text-gray-500 mb-1">违规账户</p>
+                        <p class="font-medium">诚信百货店</p>
+                    </div>
+                    <div class="bg-light rounded-lg p-3">
+                        <p class="text-gray-500 mb-1">违规编号</p>
+                        <p class="font-medium">SH20231015008</p>
+                    </div>
+                    <div class="bg-light rounded-lg p-3">
+                        <p class="text-gray-500 mb-1">违规时间</p>
+                        <p class="font-medium">2023-10-14</p>
+                    </div>
+                    <div class="bg-light rounded-lg p-3">
+                        <p class="text-gray-500 mb-1">违规节点</p>
+                        <p class="font-medium">商品宣传违规</p>
+                    </div>
+                </div>
+
+                <!-- 重点结论 -->
+                <div class="border-t border-gray-100 pt-4">
+                    <h3 class="font-bold mb-2">重点结论</h3>
+                    <p class="text-sm text-gray-700 bg-yellow-50 p-3 rounded-lg border border-yellow-100">
+                        您的店铺因在商品描述中使用"最优质"、"第一品牌"等绝对化用语，违反了《广告法》及平台管理规定，需在24小时内修改相关内容。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 详细指导 -->
+            <div class="space-y-4 mb-6">
+                <!-- 规则解读 -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="rule-header p-4 flex justify-between items-center cursor-pointer">
+                        <h3 class="font-bold flex items-center">
+                            <i class="fa fa-book text-primary mr-2"></i>
+                            规则解读
+                        </h3>
+                        <i class="fa fa-chevron-down text-gray-400 transition-transform duration-300"></i>
+                    </div>
+                    <div class="rule-content px-4 pb-4">
+                        <p class="text-sm text-gray-700 leading-relaxed">
+                            根据《中华人民共和国广告法》第九条规定，广告不得使用"国家级"、"最高级"、"最佳"等用语。平台管理规则进一步明确，禁止使用"最"、"第一"、"顶级"等绝对化描述词汇。
+                            <br><br>
+                            此类违规行为根据情节严重程度，可能面临商品下架、店铺扣分、限制推广等处罚。
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 自查方法 -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="rule-header p-4 flex justify-between items-center cursor-pointer">
+                        <h3 class="font-bold flex items-center">
+                            <i class="fa fa-search text-primary mr-2"></i>
+                            自查方法
+                        </h3>
+                        <i class="fa fa-chevron-down text-gray-400 transition-transform duration-300"></i>
+                    </div>
+                    <div class="rule-content px-4 pb-4">
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li class="flex items-start">
+                                <i class="fa fa-check-circle text-secondary mt-1 mr-2"></i>
+                                <span>检查所有商品标题、详情页中的描述词汇</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-check-circle text-secondary mt-1 mr-2"></i>
+                                <span>搜索含有"最"、"第一"、"顶级"、"独家"等关键词的内容</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-check-circle text-secondary mt-1 mr-2"></i>
+                                <span>检查店铺公告、宣传海报等其他展示区域</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 改进建议 -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="rule-header p-4 flex justify-between items-center cursor-pointer">
+                        <h3 class="font-bold flex items-center">
+                            <i class="fa fa-lightbulb-o text-primary mr-2"></i>
+                            改进建议
+                        </h3>
+                        <i class="fa fa-chevron-down text-gray-400 transition-transform duration-300"></i>
+                    </div>
+                    <div class="rule-content px-4 pb-4">
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            <li class="flex items-start">
+                                <i class="fa fa-check-circle text-secondary mt-1 mr-2"></i>
+                                <span>将"最优质"修改为具体参数描述，如"采用304不锈钢材质"</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-check-circle text-secondary mt-1 mr-2"></i>
+                                <span>使用客观数据替代绝对化用语，如"99%用户好评"</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-check-circle text-secondary mt-1 mr-2"></i>
+                                <span>修改完成后重新提交审核，通常2小时内完成审核</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 我要申诉 -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="rule-header p-4 flex justify-between items-center cursor-pointer">
+                        <h3 class="font-bold flex items-center">
+                            <i class="fa fa-gavel text-primary mr-2"></i>
+                            我要申诉
+                        </h3>
+                        <i class="fa fa-chevron-down text-gray-400 transition-transform duration-300"></i>
+                    </div>
+                    <div class="rule-content px-4 pb-4">
+                        <p class="text-sm text-gray-700 mb-3">
+                            如您对本次判罚有异议，可在收到违规通知后72小时内提交申诉：
+                        </p>
+                        <button class="w-full bg-white border border-primary text-primary py-2 rounded-lg text-sm font-medium hover:bg-primary/5 transition-colors">
+                            前往申诉中心
+                        </button>
+                        <p class="text-xs text-gray-500 mt-2 text-center">
+                            申诉处理周期一般为1-3个工作日
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1v1咨询 -->
+            <div class="bg-white rounded-xl p-5 text-center shadow-sm border border-gray-100">
+                <h3 class="font-bold mb-2">还有其他问题？</h3>
+                <p class="text-sm text-gray-600 mb-4">
+                    以上信息未解决您的问题？可联系专业顾问1v1咨询
+                </p>
+                <div class="bg-light w-36 h-36 mx-auto rounded-lg flex items-center justify-center mb-3">
+                    <div class="text-center">
+                        <i class="fa fa-qrcode text-5xl text-gray-400 mb-2"></i>
+                        <p class="text-xs text-gray-500">企微二维码</p>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500">
+                    扫码添加客服，工作日 9:00-18:00 在线
+                </p>
+            </div>
+
+            <!-- 返回按钮 -->
+            <button id="back-btn" class="w-full bg-primary text-white py-3 rounded-xl font-medium text-center shadow-md hover:bg-primary/90 transition-colors mt-6">
+                返回重新上传
+            </button>
+        </section>
+    </main>
+
+    <!-- 示意图浮层 -->
+    <div id="image-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="relative bg-white rounded-xl p-2 max-w-3xl w-full max-h-[90vh] overflow-auto">
+            <img id="modal-image" src="https://raw.githubusercontent.com/KevinzbZhang/AMStongyipingtai/main/heguizhenduan.png" alt="合规诊断示意图" class="w-full h-auto rounded">
+            <button id="close-modal-btn" class="absolute top-4 right-4 w-8 h-8 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors">
+                <i class="fa fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 切换界面
+        const uploadSection = document.getElementById('upload-section');
+        const resultSection = document.getElementById('result-section');
+        const toResultBtn = document.getElementById('to-result-btn');
+        const backBtn = document.getElementById('back-btn');
+
+        toResultBtn.addEventListener('click', () => {
+            uploadSection.classList.add('hidden');
+            resultSection.classList.remove('hidden');
+            window.scrollTo(0, 0);
+        });
+
+        backBtn.addEventListener('click', () => {
+            resultSection.classList.add('hidden');
+            uploadSection.classList.remove('hidden');
+            window.scrollTo(0, 0);
+        });
+
+        // 图片上传和预览功能
+        const uploadArea = document.getElementById('upload-area');
+        const uploadBtn = document.getElementById('upload-btn');
+        const fileInput = document.getElementById('file-input');
+        const previewContainer = document.getElementById('preview-container');
+        const previewImage = document.getElementById('preview-image');
+        const removeImageBtn = document.getElementById('remove-image');
+        
+        // 点击上传区域或上传按钮时触发文件选择
+        uploadArea.addEventListener('click', (e) => {
+            // 如果点击的不是查看示意图按钮，则触发文件选择
+            if (!e.target.closest('#view-sample-btn')) {
+                fileInput.click();
+            }
+        });
+        
+        uploadBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // 阻止事件冒泡
+            fileInput.click();
+        });
+        
+        // 文件选择变化时处理预览 - 互斥显示
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                // 检查文件类型
+                const validTypes = ['image/jpeg', 'image/png'];
+                if (!validTypes.includes(file.type)) {
+                    alert('请上传JPG或PNG格式的图片');
+                    return;
+                }
+                
+                // 检查文件大小（5MB）
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('文件大小不能超过5MB');
+                    return;
+                }
+                
+                // 创建图片预览
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    previewImage.src = event.target.result;
+                    uploadArea.classList.add('hidden'); // 隐藏上传区域
+                    previewContainer.classList.remove('hidden'); // 显示预览区域
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // 删除预览图片 - 恢复上传区域
+        removeImageBtn.addEventListener('click', () => {
+            fileInput.value = ''; // 清空文件输入
+            previewContainer.classList.add('hidden'); // 隐藏预览区域
+            previewImage.src = '';
+            uploadArea.classList.remove('hidden'); // 显示上传区域
+        });
+
+        // 处理折叠面板 - 默认展开所有内容
+        const ruleHeaders = document.querySelectorAll('.rule-header');
+        ruleHeaders.forEach(header => {
+            // 默认展开所有内容
+            const content = header.nextElementSibling;
+            const icon = header.querySelector('.fa-chevron-down');
+            icon.classList.add('rotate-180');
+            
+            header.addEventListener('click', () => {
+                content.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            });
+        });
+
+        // 示意图浮层功能
+        const viewSampleBtn = document.getElementById('view-sample-btn');
+        const imageModal = document.getElementById('image-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        
+        // 打开浮层
+        viewSampleBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // 阻止事件冒泡
+            imageModal.classList.remove('hidden');
+            // 禁止背景滚动
+            document.body.style.overflow = 'hidden';
+        });
+        
+        // 关闭浮层
+        const closeModal = () => {
+            imageModal.classList.add('hidden');
+            // 恢复背景滚动
+            document.body.style.overflow = 'auto';
+        };
+        
+        closeModalBtn.addEventListener('click', closeModal);
+        
+        // 点击浮层背景关闭
+        imageModal.addEventListener('click', (e) => {
+            if (e.target === imageModal) {
+                closeModal();
+            }
+        });
+        
+        // ESC键关闭浮层
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !imageModal.classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

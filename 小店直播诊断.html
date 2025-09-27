@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小店直播诊断</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 引入ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    
+    <!-- 配置Tailwind自定义颜色和字体 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#FF7D00',
+                        success: '#00B42A',
+                        warning: '#FF7D00',
+                        danger: '#F53F3F',
+                        gray: {
+                            100: '#F2F3F5',
+                            200: '#E5E6EB',
+                            300: '#C9CDD4',
+                            400: '#86909C',
+                            500: '#4E5969',
+                            600: '#272E3B',
+                            700: '#1D2129',
+                        }
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .shadow-soft {
+                box-shadow: 0 2px 14px rgba(0, 0, 0, 0.06);
+            }
+            .text-balance {
+                text-wrap: balance;
+            }
+            .transition-height {
+                transition: max-height 0.3s ease-in-out;
+            }
+            .chart-bar {
+                border-radius: 3px;
+                background-color: #165DFF;
+                transition: height 0.3s ease;
+            }
+            .chart-bar-warning {
+                border-radius: 3px;
+                background-color: #FF7D00;
+                transition: height 0.3s ease;
+            }
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-100 min-h-screen text-gray-700">
+    <div class="max-w-md mx-auto bg-white min-h-screen relative overflow-hidden">
+        <!-- 界面1：上传直播间图片 -->
+        <div id="upload-screen" class="transition-all duration-500 ease-in-out">
+            <!-- 顶部导航 -->
+            <header class="py-4 px-6 border-b border-gray-200 flex justify-center items-center">
+                <div class="text-primary font-bold text-xl">小店直播诊断</div>
+            </header>
+            
+            <!-- 主要内容 -->
+            <main class="p-6 pt-6">
+                <h1 class="text-[clamp(1.3rem,5vw,1.8rem)] font-bold text-gray-700 mb-2 text-center">提升你的直播效果</h1>
+                <p class="text-gray-500 mb-6 text-balance text-center">上传你的直播间截图，获取专业分析和优化建议</p>
+                
+                <!-- 产品优点 - 移到上方 -->
+                <div class="space-y-3 mb-6">
+                    <h2 class="text-base font-bold text-gray-700 mb-2">为什么选择我们？</h2>
+                    
+                    <div class="flex gap-3 p-3 bg-gray-50 rounded-lg">
+                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <i class="fa fa-line-chart text-primary text-sm"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-gray-700 text-sm mb-0.5">全面质量分析</h3>
+                            <p class="text-gray-500 text-xs">多维度评估直播质量</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-3 p-3 bg-gray-50 rounded-lg">
+                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <i class="fa fa-bar-chart text-primary text-sm"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-gray-700 text-sm mb-0.5">对比优质案例</h3>
+                            <p class="text-gray-500 text-xs">找出差距和改进点</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-3 p-3 bg-gray-50 rounded-lg">
+                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <i class="fa fa-lightbulb-o text-primary text-sm"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-gray-700 text-sm mb-0.5">专业优化建议</h3>
+                            <p class="text-gray-500 text-xs">提供可落地的改进方案</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 上传区域 -->
+                <div id="upload-area" class="border-2 border-dashed border-gray-300 rounded-xl p-5 text-center mb-5 transition-all duration-300 hover:border-primary/70">
+                    <div class="upload-icon mx-auto w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                        <i class="fa fa-camera text-primary text-xl"></i>
+                    </div>
+                    <h3 class="font-medium text-gray-700 mb-2 text-sm">点击或拖拽图片到这里</h3>
+                    <p class="text-gray-400 text-xs mb-3">
+                        请确保图片包含：小店名称、直播市场、<br>
+                        成交人群画像、五维四率数据等
+                    </p>
+                    <p class="text-gray-400 text-xs mb-3">支持JPG、PNG格式，不超过5MB</p>
+                    <div class="space-y-3">
+                        <button id="upload-btn" class="bg-primary text-white py-2.5 px-6 rounded-lg font-medium shadow-md hover:bg-primary/90 transition-all text-sm w-full">
+                            选择图片
+                        </button>
+                        <button id="view-sample-btn" class="bg-gray-100 text-gray-600 py-2.5 px-6 rounded-lg font-medium hover:bg-gray-200 transition-all text-sm w-full">
+                            <i class="fa fa-eye mr-1"></i> 点击查看示意图
+                        </button>
+                    </div>
+                    <input type="file" id="file-input" accept="image/*" class="hidden" />
+                </div>
+                
+                <!-- 上传后的预览（默认隐藏） -->
+                <div id="preview-container" class="hidden mb-5">
+                    <div class="relative rounded-xl overflow-hidden border border-gray-200">
+                        <img id="preview-image" src="" alt="直播间预览图" class="w-full h-auto">
+                        <button id="remove-image" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/50 flex items-center justify-center text-white hover:bg-black/70 transition-colors">
+                            <i class="fa fa-times text-sm"></i>
+                        </button>
+                    </div>
+                    <button id="analyze-btn" class="w-full mt-3 bg-secondary text-white py-2.5 px-6 rounded-lg font-medium shadow-md hover:bg-secondary/90 transition-all text-sm">
+                        开始诊断分析
+                    </button>
+                </div>
+                
+                <!-- 浮层查看大图（默认隐藏） -->
+                <div id="image-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+                    <div class="relative max-w-3xl w-full">
+                        <img id="modal-image" src="https://raw.githubusercontent.com/KevinzbZhang/AMStongyipingtai/main/zhibozhenduan.png" alt="示意图" class="w-full h-auto rounded-lg">
+                        <button id="close-modal-btn" class="absolute -top-12 right-0 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30 transition-colors">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 底部提示 -->
+                <footer class="mt-auto pt-2 text-center text-gray-400 text-xs">
+                    <p>上传即表示同意我们的<a href="#" class="text-primary">服务条款</a>和<a href="#" class="text-primary">隐私政策</a></p>
+                </footer>
+            </main>
+        </div>
+        
+        <!-- 界面2：诊断结果（默认隐藏） -->
+        <div id="result-screen" class="hidden transition-all duration-500 ease-in-out">
+            <!-- 顶部导航 -->
+            <header class="py-4 px-6 border-b border-gray-200 flex justify-between items-center">
+                <button id="back-btn" class="text-gray-500 hover:text-primary transition-colors">
+                    <i class="fa fa-arrow-left"></i>
+                </button>
+                <div class="text-primary font-bold text-xl">诊断结果</div>
+                <div class="w-6"></div> <!-- 占位，保持居中 -->
+            </header>
+            
+            <!-- 主要内容 -->
+            <main class="p-6 pt-5">
+                <!-- 总体评分 -->
+                <div class="bg-gradient-to-r from-primary to-primary/70 rounded-2xl p-5 text-white mb-5">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h2 class="font-medium mb-1">总体评分</h2>
+                            <p class="text-white/80 text-sm">基于行业标准评估</p>
+                        </div>
+                        <div class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm">
+                            中等水平
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-end gap-3 mb-2">
+                        <div class="text-[clamp(2.2rem,10vw,3.5rem)] font-bold">72</div>
+                        <div class="text-white/80 mb-1">/ 100</div>
+                    </div>
+                    
+                    <div class="w-full bg-white/20 rounded-full h-2 overflow-hidden">
+                        <div class="bg-white h-full rounded-full" style="width: 72%"></div>
+                    </div>
+                </div>
+                
+                <!-- 关键发现 -->
+                <div class="mb-5">
+                    <h2 class="text-lg font-bold text-gray-700 mb-3">关键发现</h2>
+                    
+                    <div class="space-y-3">
+                        <div class="bg-warning/10 border-l-4 border-warning p-3 rounded-r-lg">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-medium text-gray-700 mb-0.5">转化率偏低</h3>
+                                    <p class="text-gray-500 text-xs">低于行业平均水平15%</p>
+                                </div>
+                                <i class="fa fa-exclamation-triangle text-warning"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-warning/10 border-l-4 border-warning p-3 rounded-r-lg">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-medium text-gray-700 mb-0.5">流量渠道单一</h3>
+                                    <p class="text-gray-500 text-xs">过度依赖推荐流量</p>
+                                </div>
+                                <i class="fa fa-exclamation-triangle text-warning"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-success/10 border-l-4 border-success p-3 rounded-r-lg">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-medium text-gray-700 mb-0.5">观众停留时间良好</h3>
+                                    <p class="text-gray-500 text-xs">高于行业平均水平8%</p>
+                                </div>
+                                <i class="fa fa-check-circle text-success"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 详细分析 -->
+                <div class="space-y-4">
+                    <!-- 核心指标解读 -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden shadow-soft">
+                        <div class="analysis-header p-3 flex justify-between items-center cursor-pointer" data-target="metrics-details">
+                            <h3 class="font-medium text-gray-700">1. 核心指标解读</h3>
+                            <i class="fa fa-chevron-down text-gray-400 transition-transform duration-300 rotate-180"></i>
+                        </div>
+                        <div id="metrics-details" class="max-h-[1000px] overflow-hidden transition-height">
+                            <div class="border-t border-gray-100 p-3 bg-gray-50">
+                                <div class="space-y-3 text-xs text-gray-600">
+                                    <div>
+                                        <div class="flex justify-between mb-1">
+                                            <span class="font-medium">观看人数</span>
+                                            <span>2,456 人</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                            <div class="bg-primary h-full rounded-full" style="width: 65%"></div>
+                                        </div>
+                                        <p class="mt-1 text-gray-500">较同类直播平均水平高12%</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <div class="flex justify-between mb-1">
+                                            <span class="font-medium">互动率</span>
+                                            <span>8.7%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                            <div class="bg-primary h-full rounded-full" style="width: 58%"></div>
+                                        </div>
+                                        <p class="mt-1 text-gray-500">略低于行业平均水平</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <div class="flex justify-between mb-1">
+                                            <span class="font-medium">转化率</span>
+                                            <span>3.2%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                            <div class="bg-warning h-full rounded-full" style="width: 35%"></div>
+                                        </div>
+                                        <p class="mt-1 text-gray-500">低于行业平均水平15%</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <div class="flex justify-between mb-1">
+                                            <span class="font-medium">客单价</span>
+                                            <span>¥128</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                            <div class="bg-primary h-full rounded-full" style="width: 60%"></div>
+                                        </div>
+                                        <p class="mt-1 text-gray-500">与行业平均水平持平</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 转化漏斗分析 -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden shadow-soft">
+                        <div class="analysis-header p-3 flex justify-between items-center cursor-pointer" data-target="funnel-details">
+                            <h3 class="font-medium text-gray-700">2. 转化漏斗分析及建议</h3>
+                            <i class="fa fa-chevron-down text-gray-400 transition-transform duration-300 rotate-180"></i>
+                        </div>
+                        <div id="funnel-details" class="max-h-[1000px] overflow-hidden transition-height">
+                            <div class="border-t border-gray-100 p-3 bg-gray-50">
+                                <p class="text-xs text-gray-600 mb-3">
+                                    转化漏斗各环节流失率偏高，尤其是点击到加购环节损失严重。
+                                </p>
+                                
+                                <!-- 漏斗图示 - 使用ECharts -->
+                                <div id="funnel-chart" class="w-full h-[250px] mb-4"></div>
+                                
+                                <h4 class="text-xs font-medium text-gray-700 mb-1">优化建议：</h4>
+                                <ul class="space-y-1 text-xs text-gray-600">
+                                    <li class="flex gap-1">
+                                        <i class="fa fa-circle text-[8px] text-primary mt-0.5"></i>
+                                        <span>优化产品讲解，突出核心卖点和优惠信息</span>
+                                    </li>
+                                    <li class="flex gap-1">
+                                        <i class="fa fa-circle text-[8px] text-primary mt-0.5"></i>
+                                        <span>简化购买流程，减少操作步骤</span>
+                                    </li>
+                                    <li class="flex gap-1">
+                                        <i class="fa fa-circle text-[8px] text-primary mt-0.5"></i>
+                                        <span>增加限时优惠活动，刺激即时购买</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 分小时数据趋势 -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden shadow-soft">
+                        <div class="analysis-header p-3 flex justify-between items-center cursor-pointer" data-target="hourly-details">
+                            <h3 class="font-medium text-gray-700">3. 分小时数据趋势</h3>
+                            <i class="fa fa-chevron-down text-gray-400 transition-transform duration-300 rotate-180"></i>
+                        </div>
+                        <div id="hourly-details" class="max-h-[1000px] overflow-hidden transition-height">
+                            <div class="border-t border-gray-100 p-3 bg-gray-50">
+                                <p class="text-xs text-gray-600 mb-3">
+                                    流量高峰出现在20:00-21:00，但转化率高峰期在19:00-20:00，建议提前开始直播。
+                                </p>
+                                
+                                <!-- 小时趋势图 - 使用ECharts -->
+                                <div id="hourly-chart" class="w-full h-[250px] mb-4"></div>
+                                
+                                <div class="flex justify-between text-[8px] text-gray-500 px-2">
+                                    <span>观看人数趋势（单位：百人）</span>
+                                    <span>时间（小时）</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 流量渠道数据分析 -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden shadow-soft">
+                        <div class="analysis-header p-3 flex justify-between items-center cursor-pointer" data-target="channel-details">
+                            <h3 class="font-medium text-gray-700">4. 流量渠道数据分析</h3>
+                            <i class="fa fa-chevron-down text-gray-400 transition-transform duration-300 rotate-180"></i>
+                        </div>
+                        <div id="channel-details" class="max-h-[1000px] overflow-hidden transition-height">
+                            <div class="border-t border-gray-100 p-3 bg-gray-50">
+                                <p class="text-xs text-gray-600 mb-3">
+                                    流量来源单一，过度依赖推荐流量，一旦平台算法调整将面临较大风险。
+                                </p>
+                                
+                                <div class="space-y-2">
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span>推荐流量</span>
+                                            <span>72%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                            <div class="bg-primary h-full rounded-full" style="width: 72%"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span>关注流量</span>
+                                            <span>15%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                            <div class="bg-primary h-full rounded-full" style="width: 15%"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span>搜索流量</span>
+                                            <span>8%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                            <div class="bg-primary h-full rounded-full" style="width: 8%"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span>其他渠道</span>
+                                            <span>5%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                            <div class="bg-primary h-full rounded-full" style="width: 5%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 问题定位与优化建议 -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden shadow-soft">
+                        <div class="analysis-header p-3 flex justify-between items-center cursor-pointer" data-target="optimization-details">
+                            <h3 class="font-medium text-gray-700">5. 问题定位与针对性优化</h3>
+                            <i class="fa fa-chevron-down text-gray-400 transition-transform duration-300 rotate-180"></i>
+                        </div>
+                        <div id="optimization-details" class="max-h-[1000px] overflow-hidden transition-height">
+                            <div class="border-t border-gray-100 p-3 bg-gray-50">
+                                <div class="space-y-3 text-xs">
+                                    <div>
+                                        <h4 class="font-medium text-gray-700 mb-1">主要问题：</h4>
+                                        <ul class="space-y-1 text-gray-600">
+                                            <li class="flex gap-1">
+                                                <i class="fa fa-circle text-[8px] text-danger mt-0.5"></i>
+                                                <span>产品讲解不够清晰，核心卖点不突出</span>
+                                            </li>
+                                            <li class="flex gap-1">
+                                                <i class="fa fa-circle text-[8px] text-danger mt-0.5"></i>
+                                                <span>优惠活动复杂，观众理解成本高</span>
+                                            </li>
+                                            <li class="flex gap-1">
+                                                <i class="fa fa-circle text-[8px] text-danger mt-0.5"></i>
+                                                <span>流量渠道单一，抗风险能力弱</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 class="font-medium text-gray-700 mb-1">针对性优化建议：</h4>
+                                        <ul class="space-y-1 text-gray-600">
+                                            <li class="flex gap-1">
+                                                <i class="fa fa-circle text-[8px] text-primary mt-0.5"></i>
+                                                <span>提前准备产品讲解脚本，突出3-5个核心卖点</span>
+                                            </li>
+                                            <li class="flex gap-1">
+                                                <i class="fa fa-circle text-[8px] text-primary mt-0.5"></i>
+                                                <span>简化优惠规则，采用直观的折扣方式</span>
+                                            </li>
+                                            <li class="flex gap-1">
+                                                <i class="fa fa-circle text-[8px] text-primary mt-0.5"></i>
+                                                <span>加强直播预告，提升关注流量占比</span>
+                                            </li>
+                                            <li class="flex gap-1">
+                                                <i class="fa fa-circle text-[8px] text-primary mt-0.5"></i>
+                                                <span>优化直播间标题和标签，提高搜索可见性</span>
+                                            </li>
+                                            <li class="flex gap-1">
+                                                <i class="fa fa-circle text-[8px] text-primary mt-0.5"></i>
+                                                <span>在直播前后发布相关短视频引流</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="bg-primary/5 p-2 rounded-lg text-xs text-primary">
+                                        <i class="fa fa-lightbulb-o mr-1"></i>
+                                        建议进行A/B测试：在相同时间段分别采用现有方式和优化方案直播，对比效果差异
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 行动按钮 -->
+                <div class="mt-5">
+                    <button id="save-report-btn" class="w-full bg-primary text-white py-2.5 px-6 rounded-lg font-medium shadow-md hover:bg-primary/90 transition-all mb-2 text-sm">
+                        <i class="fa fa-download mr-2"></i>保存诊断报告
+                    </button>
+                    <button id="new-analysis-btn" class="w-full bg-white border border-primary text-primary py-2.5 px-6 rounded-lg font-medium hover:bg-primary/5 transition-all text-sm">
+                        <i class="fa fa-refresh mr-2"></i>重新上传分析
+                    </button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // DOM元素获取
+        const uploadScreen = document.getElementById('upload-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const uploadBtn = document.getElementById('upload-btn');
+        const fileInput = document.getElementById('file-input');
+        const uploadArea = document.getElementById('upload-area');
+        const previewContainer = document.getElementById('preview-container');
+        const previewImage = document.getElementById('preview-image');
+        const removeImage = document.getElementById('remove-image');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const backBtn = document.getElementById('back-btn');
+        const newAnalysisBtn = document.getElementById('new-analysis-btn');
+        const analysisHeaders = document.querySelectorAll('.analysis-header');
+        const viewSampleBtn = document.getElementById('view-sample-btn');
+        const imageModal = document.getElementById('image-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 默认展开所有分析详情
+            analysisHeaders.forEach(header => {
+                const targetId = header.getAttribute('data-target');
+                const targetElement = document.getElementById(targetId);
+                const icon = header.querySelector('i');
+                
+                // 设置为展开状态
+                targetElement.style.maxHeight = targetElement.scrollHeight + 'px';
+                icon.classList.add('rotate-180');
+            });
+        });
+        
+        // 点击上传按钮触发文件选择
+        uploadBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        // 处理文件选择
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                const file = e.target.files[0];
+                // 检查文件类型
+                if (!file.type.match('image.*')) {
+                    alert('请选择图片文件');
+                    return;
+                }
+                // 检查文件大小
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('图片大小不能超过5MB');
+                    return;
+                }
+                
+                // 预览图片
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    previewImage.src = event.target.result;
+                    uploadArea.classList.add('hidden');
+                    previewContainer.classList.remove('hidden');
+                    
+                    // 添加淡入动画
+                    previewImage.classList.add('opacity-0');
+                    setTimeout(() => {
+                        previewImage.classList.remove('opacity-0');
+                        previewImage.classList.add('transition-opacity', 'duration-500', 'opacity-100');
+                    }, 10);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // 移除已上传的图片
+        removeImage.addEventListener('click', () => {
+            previewImage.src = '';
+            fileInput.value = '';
+            previewContainer.classList.add('hidden');
+            uploadArea.classList.remove('hidden');
+        });
+        
+        // 拖放功能
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('border-primary', 'bg-primary/5');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('border-primary', 'bg-primary/5');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('border-primary', 'bg-primary/5');
+            
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                const file = e.dataTransfer.files[0];
+                if (file.type.match('image.*') && file.size <= 5 * 1024 * 1024) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        previewImage.src = event.target.result;
+                        uploadArea.classList.add('hidden');
+                        previewContainer.classList.remove('hidden');
+                        
+                        // 添加淡入动画
+                        previewImage.classList.add('opacity-0');
+                        setTimeout(() => {
+                            previewImage.classList.remove('opacity-0');
+                            previewImage.classList.add('transition-opacity', 'duration-500', 'opacity-100');
+                        }, 10);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('请上传不超过5MB的图片文件');
+                }
+            }
+        });
+        
+        // 分析按钮点击事件 - 切换到结果界面
+        analyzeBtn.addEventListener('click', () => {
+            // 模拟加载效果
+            analyzeBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i>分析中...';
+            analyzeBtn.disabled = true;
+            
+            setTimeout(() => {
+                uploadScreen.classList.add('opacity-0', 'translate-x-full');
+                setTimeout(() => {
+                    uploadScreen.classList.add('hidden');
+                    resultScreen.classList.remove('hidden');
+                    setTimeout(() => {
+                        resultScreen.classList.remove('opacity-0', 'translate-x-full');
+                        // 确保所有分析详情在切换界面后保持展开状态
+                        analysisHeaders.forEach(header => {
+                            const targetId = header.getAttribute('data-target');
+                            const targetElement = document.getElementById(targetId);
+                            targetElement.style.maxHeight = targetElement.scrollHeight + 'px';
+                        });
+                    }, 50);
+                }, 300);
+                
+                // 重置按钮状态
+                analyzeBtn.innerHTML = '开始诊断分析';
+                analyzeBtn.disabled = false;
+            }, 1500);
+        });
+        
+        // 返回按钮点击事件 - 切换到上传界面
+        backBtn.addEventListener('click', () => {
+            resultScreen.classList.add('opacity-0', 'translate-x-full');
+            setTimeout(() => {
+                resultScreen.classList.add('hidden');
+                uploadScreen.classList.remove('hidden');
+                setTimeout(() => {
+                    uploadScreen.classList.remove('opacity-0', 'translate-x-full');
+                }, 50);
+            }, 300);
+        });
+        
+        // 重新分析按钮
+        newAnalysisBtn.addEventListener('click', () => {
+            // 清除已上传的图片
+            previewImage.src = '';
+            fileInput.value = '';
+            previewContainer.classList.add('hidden');
+            uploadArea.classList.remove('hidden');
+            
+            // 切换界面
+            resultScreen.classList.add('opacity-0', 'translate-x-full');
+            setTimeout(() => {
+                resultScreen.classList.add('hidden');
+                uploadScreen.classList.remove('hidden');
+                setTimeout(() => {
+                    uploadScreen.classList.remove('opacity-0', 'translate-x-full');
+                }, 50);
+            }, 300);
+        });
+        
+        // 分析详情的展开/折叠功能
+        analysisHeaders.forEach(header => {
+            header.addEventListener('click', () => {
+                const targetId = header.getAttribute('data-target');
+                const targetElement = document.getElementById(targetId);
+                const icon = header.querySelector('i');
+                
+                if (targetElement.style.maxHeight && targetElement.style.maxHeight !== '0px') {
+                    targetElement.style.maxHeight = null;
+                    icon.classList.remove('rotate-180');
+                } else {
+                    targetElement.style.maxHeight = targetElement.scrollHeight + 'px';
+                    icon.classList.add('rotate-180');
+                }
+            });
+        });
+        
+        // 保存报告按钮
+            document.getElementById('save-report-btn').addEventListener('click', () => {
+                // 模拟保存效果
+                const saveBtn = document.getElementById('save-report-btn');
+                const originalText = saveBtn.innerHTML;
+                
+                saveBtn.innerHTML = '<i class="fa fa-check mr-2"></i>已保存';
+                saveBtn.classList.add('bg-success');
+                saveBtn.classList.remove('bg-primary');
+                
+                setTimeout(() => {
+                    saveBtn.innerHTML = originalText;
+                    saveBtn.classList.remove('bg-success');
+                    saveBtn.classList.add('bg-primary');
+                }, 2000);
+            });
+            
+            // 查看示意图按钮点击事件
+            viewSampleBtn.addEventListener('click', () => {
+                imageModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden'; // 防止背景滚动
+            });
+            
+            // 关闭浮层按钮点击事件
+            closeModalBtn.addEventListener('click', () => {
+                imageModal.classList.add('hidden');
+                document.body.style.overflow = ''; // 恢复背景滚动
+            });
+            
+            // 点击浮层背景关闭
+            imageModal.addEventListener('click', (e) => {
+                if (e.target === imageModal) {
+                    imageModal.classList.add('hidden');
+                    document.body.style.overflow = ''; // 恢复背景滚动
+                }
+            });
+            
+            // ESC键关闭浮层
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !imageModal.classList.contains('hidden')) {
+                    imageModal.classList.add('hidden');
+                    document.body.style.overflow = ''; // 恢复背景滚动
+                }
+            });
+            
+            // 初始化ECharts图表
+            function initCharts() {
+                // 初始化转化漏斗图表
+                const funnelChart = echarts.init(document.getElementById('funnel-chart'));
+                const funnelOption = {
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: '{a} <br/>{b}: {c}% ({d}%)'
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        right: 10,
+                        top: 'center',
+                        textStyle: {
+                            fontSize: 10
+                        }
+                    },
+                    series: [
+                        {
+                            name: '转化漏斗',
+                            type: 'funnel',
+                            left: '10%',
+                            top: 20,
+                            bottom: 20,
+                            width: '60%',
+                            min: 0,
+                            max: 100,
+                            minSize: '0%',
+                            maxSize: '100%',
+                            sort: 'descending',
+                            gap: 2,
+                            label: {
+                                show: true,
+                                position: 'inside',
+                                formatter: '{b}\n{c}%',
+                                fontSize: 10
+                            },
+                            labelLine: {
+                                length: 10,
+                                lineStyle: {
+                                    width: 1,
+                                    type: 'solid'
+                                }
+                            },
+                            itemStyle: {
+                                borderColor: '#fff',
+                                borderWidth: 1
+                            },
+                            emphasis: {
+                                label: {
+                                    fontSize: 12
+                                }
+                            },
+                            data: [
+                                { value: 100, name: '曝光', itemStyle: { color: '#165DFF' } },
+                                { value: 75, name: '点击', itemStyle: { color: '#165DFF' } },
+                                { value: 40, name: '加购', itemStyle: { color: '#FF7D00' } },
+                                { value: 15, name: '下单', itemStyle: { color: '#FF7D00' } },
+                                { value: 3.2, name: '成交', itemStyle: { color: '#FF7D00' } }
+                            ]
+                        }
+                    ]
+                };
+                funnelChart.setOption(funnelOption);
+                
+                // 初始化小时趋势图表
+                const hourlyChart = echarts.init(document.getElementById('hourly-chart'));
+                const hourlyOption = {
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow'
+                        }
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: ['18时', '19时', '20时', '21时', '22时', '23时'],
+                        axisLabel: {
+                            fontSize: 10
+                        }
+                    },
+                    yAxis: {
+                        type: 'value',
+                        name: '观看人数（百人）',
+                        nameTextStyle: {
+                            fontSize: 10
+                        },
+                        axisLabel: {
+                            fontSize: 10
+                        }
+                    },
+                    series: [
+                        {
+                            name: '观看人数',
+                            type: 'bar',
+                            data: [30, 65, 90, 80, 50, 25],
+                            itemStyle: {
+                                color: '#165DFF'
+                            },
+                            markPoint: {
+                                data: [
+                                    {
+                                        type: 'max',
+                                        name: '观看高峰',
+                                        symbolSize: 30
+                                    },
+                                    {
+                                        coord: [1, 65],
+                                        name: '转化率峰值',
+                                        symbolSize: 30,
+                                        itemStyle: {
+                                            color: '#FF7D00'
+                                        }
+                                    }
+                                ],
+                                label: {
+                                    fontSize: 10
+                                }
+                            }
+                        }
+                    ]
+                };
+                hourlyChart.setOption(hourlyOption);
+                
+                // 响应式调整
+                window.addEventListener('resize', function() {
+                    funnelChart.resize();
+                    hourlyChart.resize();
+                });
+            }
+            
+            // 在分析结果显示后初始化图表
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (!mutation.target.classList.contains('hidden') && 
+                        document.getElementById('funnel-chart') && 
+                        document.getElementById('hourly-chart')) {
+                        setTimeout(initCharts, 100);
+                    }
+                });
+            });
+            
+            observer.observe(document.getElementById('result-screen'), {
+                attributes: true,
+                attributeFilter: ['class']
+            });
+    </script>
+</body>
+</html>

@@ -1,0 +1,833 @@
+<html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>智能创作</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义颜色和字体 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F7DF9',
+                        secondary: '#8EADFF',
+                        purple: '#9747FF',
+                        cyan: '#36BFFA',
+                        neutral: {
+                            100: '#F3F4F6',
+                            200: '#E5E7EB',
+                            300: '#D1D5DB',
+                            400: '#9CA3AF',
+                            500: '#6B7280',
+                            600: '#4B5563',
+                            700: '#374151',
+                            800: '#1F2937',
+                            900: '#111827',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+            }
+            .btn-effect {
+                @apply transition-all duration-200 active:scale-95;
+            }
+            .gradient-primary {
+                background: linear-gradient(135deg, #4F7DF9 0%, #8EADFF 100%);
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .card-shadow {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            }
+            .fade-in {
+                animation: fadeIn 0.5s ease-in-out;
+            }
+            .skeleton-loading {
+                background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+                background-size: 200% 100%;
+                animation: loading 1.5s infinite;
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes loading {
+                0% { background-position: 200% 0; }
+                100% { background-position: -200% 0; }
+            }
+            @keyframes slideUp {
+                from {
+                    transform: translateY(100%);
+                }
+                to {
+                    transform: translateY(0);
+                }
+            }
+            .animate-slide-up {
+                animation: slideUp 0.3s ease-out forwards;
+            }
+            .tab-content {
+                display: none;
+            }
+            .tab-content.active {
+                display: block;
+            }
+        }
+        /* 模态框背景动画 */
+        #industry-modal {
+            opacity: 0;
+            transition: opacity 0.3s ease-out;
+        }
+        #industry-modal:not(.hidden) {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 min-h-screen">
+    <!-- 顶部导航栏 -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <button id="back-button" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 btn-effect">
+                <i class="fa fa-arrow-left"></i>
+            </button>
+            <h1 class="text-xl font-semibold absolute left-1/2 transform -translate-x-1/2">智能创作</h1>
+            <div class="w-10"></div> <!-- 占位元素，保持标题居中 -->
+        </div>
+    </header>
+    
+
+
+    <!-- 主内容区域 -->
+    <main class="container mx-auto px-4 pb-36"> <!-- 增加底部内边距，为吸底内容留出空间 -->
+        <!-- 智能工具 Tab 内容 -->
+        <div id="tools-content" class="tab-content active">
+            <!-- AI创建素材区域 -->
+            <section class="mt-4 mb-6">
+                <div class="gradient-primary rounded-2xl p-4 text-white relative overflow-hidden flex items-center justify-between">
+                    <!-- 背景装饰 -->
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10"></div>
+                    
+                    <div class="flex items-center relative z-10">
+                        <span class="bg-white/20 rounded-full p-1.5 mr-3">
+                            <i class="fa fa-robot"></i>
+                        </span>
+                        <div>
+                            <h2 class="text-base font-bold">AI 创建素材</h2>
+                            <p class="text-white/80 text-xs">智能生成高质量广告素材</p>
+                        </div>
+                    </div>
+                    
+                    <button class="bg-white text-primary font-medium px-4 py-1.5 rounded-full text-sm btn-effect shadow-md relative z-10">
+                        开启
+                    </button>
+                </div>
+            </section>
+
+            <!-- 主要功能卡片区域 -->
+            <section class="grid grid-cols-3 gap-4 mb-6">
+                <!-- 一键成片 -->
+                <div class="bg-white rounded-xl p-4 text-center shadow-sm card-hover">
+                    <div class="w-12 h-12 bg-purple/10 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <i class="fa fa-magic text-purple"></i>
+                    </div>
+                    <h3 class="text-xs font-medium">一键成片</h3>
+                    <p class="text-gray-500 text-xs mt-1">智能视频剪辑</p>
+                </div>
+                
+                <!-- AI做同款 -->
+                <div class="bg-white rounded-xl p-4 text-center shadow-sm card-hover">
+                    <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <i class="fa fa-clone text-primary"></i>
+                    </div>
+                    <h3 class="text-xs font-medium">AI做同款</h3>
+                    <p class="text-gray-500 text-xs mt-1">生成同款视频</p>
+                </div>
+                
+                <!-- AI导拍 -->
+                <div class="bg-white rounded-xl p-4 text-center shadow-sm card-hover">
+                    <div class="w-12 h-12 bg-cyan/10 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <i class="fa fa-video-camera text-cyan"></i>
+                    </div>
+                    <h3 class="text-xs font-medium">AI导拍</h3>
+                    <p class="text-gray-500 text-xs mt-1">教你拍视频</p>
+                </div>
+            </section>
+
+            <!-- 素材库区域 -->
+            <section class="mb-6">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="font-semibold text-base">我的素材库</h2>
+                </div>
+                
+                <p class="text-gray-500 text-sm mb-3">上更多传视频，为你持续投稿获取流量</p>
+                
+                <div class="flex items-center space-x-3 overflow-x-auto scrollbar-hide pb-2">
+                    <button class="flex-shrink-0 w-16 h-16 bg-gray-100 rounded-lg flex flex-col items-center justify-center text-gray-500 btn-effect">
+                        <i class="fa fa-cloud-upload mb-1"></i>
+                        <span class="text-xs">上传</span>
+                    </button>
+                    
+                    <!-- 商品视频素材缩略图 -->
+                    <div class="flex-shrink-0 relative w-16 h-16 rounded-lg overflow-hidden shadow-sm btn-effect">
+                        <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/d40c5416f77349719361553251a62122~tplv-a9rns2rl98-image.image?rcl=2025091516482495449249DAF1110D0382&rk3s=8e244e95&rrcfp=2609e108&x-expires=1758530908&x-signature=PpIvbFWUYoiyGEWSbTaRsGJjEXU%3D" alt="服装商品视频缩略图" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-shrink-0 relative w-16 h-16 rounded-lg overflow-hidden shadow-sm btn-effect">
+                        <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/275e8782fbce442ea07c0a2d27ddffb2~tplv-a9rns2rl98-image.image?rcl=202509151725333CA952E2F21A7E9873DD&rk3s=8e244e95&rrcfp=2609e108&x-expires=1758533137&x-signature=40ehFyl2sw1AJ7bmPcs32UJEGzw%3D" alt="电子产品视频缩略图" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-shrink-0 relative w-16 h-16 rounded-lg overflow-hidden shadow-sm btn-effect">
+                        <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/72ee032882504347a8d64ffb3bff9576~tplv-a9rns2rl98-image.image?rcl=20250915164923079AB261D96306AAA24E&rk3s=8e244e95&rrcfp=2609e108&x-expires=1758530966&x-signature=l5zqz4ksSX7G%2FZydSIvjXo62kZ0%3D" alt="家居用品视频缩略图" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-shrink-0 relative w-16 h-16 rounded-lg overflow-hidden shadow-sm btn-effect">
+                        <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/ae5710bd2f594c2ca2c32d67fdcb7698~tplv-a9rns2rl98-image.image?rcl=202509151649486C16AFDDE0ADFD8E4CDB&amp;rk3s=8e244e95&amp;rrcfp=2609e108&amp;x-expires=1758530992&amp;x-signature=kwkA8b3ZLDoBVk%2BsU1FVZIuBUBk%3D" alt="美妆产品视频缩略图" class="w-full h-full object-cover">
+                    </div>
+                    <button class="flex-shrink-0 w-16 h-16 bg-gray-800 text-white rounded-lg flex items-center justify-center text-sm btn-effect">
+                        15<br>全部
+                    </button>
+                </div>
+            </section>
+
+            <!-- 数据总览区域 -->
+            <section>
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="font-semibold text-base">数据总览</h2>
+                    <button class="text-primary text-sm btn-effect">查看全部</button>
+                </div>
+                
+                <p class="text-gray-500 text-sm mb-3">12月13日至01月11日期间</p>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white rounded-xl p-4 shadow-sm card-hover">
+                        <p class="text-gray-500 text-sm">素材数量</p>
+                        <p class="text-2xl font-bold mt-1">23</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow-sm card-hover">
+                        <p class="text-gray-500 text-sm">曝光量</p>
+                        <p class="text-2xl font-bold mt-1">62.1万</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <!-- 同行创意 Tab 内容 -->
+        <div id="creative-content" class="tab-content">
+            <!-- 同行创意顶部状态栏 -->
+            <div class="bg-white py-5 px-4 border-b border-neutral-200 sticky top-16 z-30 w-full">
+                <!-- 分类导航 -->
+                <div class="flex space-x-4">
+                    <button id="recommend-btn" class="px-3 py-1.5 bg-primary text-white rounded-full text-sm font-medium">推荐</button>
+                    <div class="relative">
+                        <button id="industry-btn" class="px-3 py-1.5 bg-white border border-neutral-200 rounded-full text-sm font-medium text-neutral-600 flex items-center">
+                            行业
+                            <i class="fa fa-chevron-down ml-1 text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 行业筛选上拉层 - 默认隐藏 -->
+            <div id="industry-modal" class="fixed inset-0 bg-black/50 z-50 flex items-end justify-center hidden">
+                <div class="bg-white w-full rounded-t-xl max-h-[80vh] overflow-hidden animate-slide-up">
+                    <!-- 模态框头部 -->
+                    <div class="sticky top-0 bg-white border-b border-gray-100 py-4 px-5 flex justify-between items-center z-10">
+                        <h3 class="text-lg font-semibold">选择行业</h3>
+                        <button id="close-industry-modal" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">
+                            <i class="fa fa-times text-gray-600"></i>
+                        </button>
+                    </div>
+                    <!-- 行业列表 -->
+                    <div class="p-5 max-h-[calc(80vh-5rem)] overflow-y-auto">
+                        <div class="grid grid-cols-3 gap-3">
+                            <button class="industry-option py-3 bg-primary/10 text-primary rounded-lg text-sm font-medium" data-industry="推荐">推荐</button>
+                            <button class="industry-option py-3 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700" data-industry="高尔夫教练">高尔夫教练</button>
+                            <button class="industry-option py-3 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700" data-industry="家居装修">家居装修</button>
+                            <button class="industry-option py-3 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700" data-industry="快餐小吃">快餐小吃</button>
+                            <button class="industry-option py-3 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700" data-industry="精品男装">精品男装</button>
+                            <button class="industry-option py-3 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700" data-industry="美妆护肤">美妆护肤</button>
+                            <button class="industry-option py-3 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700" data-industry="数码电器">数码电器</button>
+                            <button class="industry-option py-3 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700" data-industry="教育培训">教育培训</button>
+                            <button class="industry-option py-3 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700" data-industry="旅游出行">旅游出行</button>
+                            <button class="industry-option py-3 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700" data-industry="母婴用品">母婴用品</button>
+                            <button class="industry-option py-3 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700" data-industry="汽车服务">汽车服务</button>
+                            <button class="industry-option py-3 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700" data-industry="医疗健康">医疗健康</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 内容区域 -->
+            <div class="w-full px-4 py-3" id="content-container">
+                <!-- 素材卡片将通过JS动态加载 -->
+            </div>
+            
+            <!-- 加载指示器 -->
+            <div id="loading-indicator" class="py-6 flex justify-center items-center hidden">
+                <div class="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 我的作品区域 - 吸底显示 -->
+    <section class="fixed bottom-16 left-0 right-0 px-4 z-30">
+        <div class="bg-white rounded-xl p-4 shadow-md card-hover">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fa fa-film text-primary"></i>
+                    </div>
+                    <div>
+                        <p class="font-medium text-sm">有4个视频待发布</p>
+                        <p class="text-gray-500 text-xs mt-0.5">未发布的视频7天后自动清除</p>
+                    </div>
+                </div>
+                <button class="bg-primary text-white px-3 py-1.5 rounded-full text-sm btn-effect shadow-md">
+                    去发布
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 底部导航栏 -->
+    <footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 py-3 z-40">
+        <div class="grid grid-cols-2 gap-4">
+            <button id="footer-tools" class="flex flex-col items-center justify-center text-primary py-1 btn-effect">
+                <i class="fa fa-wrench text-xl"></i>
+                <span class="text-xs mt-1">智能工具</span>
+            </button>
+            <button id="footer-creative" class="flex flex-col items-center justify-center text-gray-500 py-1 btn-effect">
+                <i class="fa fa-lightbulb-o text-xl"></i>
+                <span class="text-xs mt-1">同行创意</span>
+            </button>
+        </div>
+    </footer>
+
+    <!-- AI做同款跳转功能脚本 -->
+    <script>
+        // 等待DOM加载完成
+        document.addEventListener('DOMContentLoaded', function() {
+            // 为智能创作首页的AI做同款div元素添加点击跳转
+            const aiSameStyleDiv = document.querySelector('.card-hover:nth-child(2)');
+            if (aiSameStyleDiv) {
+                aiSameStyleDiv.addEventListener('click', function() {
+                    window.location.href = 'AI同行创意.html';
+                });
+            }
+            
+            // 为所有AI做同款按钮添加点击跳转
+            function setupAiSameStyleButtons() {
+                // 查找所有包含"AI 做同款"文本的按钮
+                const buttons = document.querySelectorAll('button');
+                buttons.forEach(button => {
+                    if (button.textContent.trim() === 'AI 做同款') {
+                        button.addEventListener('click', function(e) {
+                            e.stopPropagation(); // 阻止事件冒泡
+                            window.location.href = 'AI同行创意.html';
+                        });
+                    }
+                });
+            }
+            
+            // 初始化设置
+            setupAiSameStyleButtons();
+            
+            // 监听页面内容变化，为动态加载的AI做同款按钮添加点击事件
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.addedNodes.length > 0) {
+                        setupAiSameStyleButtons();
+                    }
+                });
+            });
+            
+            // 监听整个文档的变化
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 返回按钮点击事件
+            document.getElementById('back-button').addEventListener('click', function() {
+                window.location.href = '移动版小客之家.html';
+            });
+
+            // 为所有可点击元素添加反馈效果
+            const interactiveElements = document.querySelectorAll('button, .card-hover');
+            interactiveElements.forEach(el => {
+                // 触摸反馈
+                el.addEventListener('touchstart', function() {
+                    this.classList.add('opacity-80');
+                });
+                el.addEventListener('touchend', function() {
+                    this.classList.remove('opacity-80');
+                });
+                el.addEventListener('touchcancel', function() {
+                    this.classList.remove('opacity-80');
+                });
+            });
+            
+            // 素材栏滚动增强
+            const materialScroll = document.querySelector('.scrollbar-hide');
+            if (materialScroll) {
+                let isDown = false;
+                let startX;
+                let scrollLeft;
+                
+                materialScroll.addEventListener('mousedown', (e) => {
+                    isDown = true;
+                    materialScroll.classList.add('cursor-grabbing');
+                    startX = e.pageX - materialScroll.offsetLeft;
+                    scrollLeft = materialScroll.scrollLeft;
+                });
+                
+                materialScroll.addEventListener('mouseleave', () => {
+                    isDown = false;
+                    materialScroll.classList.remove('cursor-grabbing');
+                });
+                
+                materialScroll.addEventListener('mouseup', () => {
+                    isDown = false;
+                    materialScroll.classList.remove('cursor-grabbing');
+                });
+                
+                materialScroll.addEventListener('mousemove', (e) => {
+                    if (!isDown) return;
+                    e.preventDefault();
+                    const x = e.pageX - materialScroll.offsetLeft;
+                    const walk = (x - startX) * 2;
+                    materialScroll.scrollLeft = scrollLeft - walk;
+                });
+            }
+            
+            // Tab切换功能
+            const toolsContent = document.getElementById('tools-content');
+            const creativeContent = document.getElementById('creative-content');
+            const footerTools = document.getElementById('footer-tools');
+            const footerCreative = document.getElementById('footer-creative');
+            const draftVideosSection = document.querySelector('section.fixed'); // 待发布视频的吸底条
+            
+            // 切换到智能工具标签
+            function showToolsTab() {
+                toolsContent.classList.add('active');
+                creativeContent.classList.remove('active');
+                footerTools.classList.add('text-primary');
+                footerTools.classList.remove('text-neutral-500');
+                footerCreative.classList.add('text-neutral-500');
+                footerCreative.classList.remove('text-primary');
+                // 在智能工具页面显示待发布视频吸底条
+                draftVideosSection.classList.remove('hidden');
+            }
+            
+            // 切换到同行创意标签
+            function showCreativeTab() {
+                toolsContent.classList.remove('active');
+                creativeContent.classList.add('active');
+                footerCreative.classList.add('text-primary');
+                footerCreative.classList.remove('text-neutral-500');
+                footerTools.classList.add('text-neutral-500');
+                footerTools.classList.remove('text-primary');
+                // 在同行创意页面隐藏待发布视频吸底条
+                draftVideosSection.classList.add('hidden');
+                
+                // 确保只有在首次切换到同行创意标签时加载数据
+                if (!creativeDataLoaded) {
+                    loadMoreItems();
+                    creativeDataLoaded = true;
+                }
+            }
+            
+            // 绑定底部Tab切换事件
+            footerTools.addEventListener('click', showToolsTab);
+            footerCreative.addEventListener('click', showCreativeTab);
+            
+            // 同行创意页面相关数据和功能
+            // 模拟广告素材数据 - 包含用户要求的具体内容
+            const creativeData = [
+                {
+                    id: 1,
+                    category: "高尔夫教练",
+                    image: "https://picsum.photos/seed/golf1/600/400",
+                    title: "专业高尔夫教练一对一指导，让你快速掌握挥杆技巧",
+                    author: "高尔夫人",
+                    exposure: 56.2,
+                    clickRate: 3.8,
+                    likes: 942
+                },
+                {
+                    id: 2,
+                    category: "家居装修",
+                    image: "https://picsum.photos/seed/home1/600/400",
+                    title: "小户型也能装出大空间感，这些装修技巧太实用了",
+                    author: "装修达人",
+                    exposure: 112.5,
+                    clickRate: 4.7,
+                    likes: 2356
+                },
+                {
+                    id: 3,
+                    category: "快餐小吃",
+                    image: "https://picsum.photos/seed/food3/600/400",
+                    title: "最爱下雨天在家吃一顿热气腾腾的火锅",
+                    author: "热爱露营",
+                    exposure: 92.4,
+                    clickRate: 3.7,
+                    likes: 1254
+                },
+                {
+                    id: 4,
+                    category: "精品男装",
+                    image: "https://picsum.photos/seed/menswear1/600/400",
+                    title: "春季新款精品男装，时尚又百搭，彰显你的品味",
+                    author: "时尚先生",
+                    exposure: 78.9,
+                    clickRate: 4.2,
+                    likes: 1678
+                },
+                {
+                    id: 5,
+                    category: "高尔夫教练",
+                    image: "https://picsum.photos/seed/golf2/600/400",
+                    title: "初学者必看！10个高尔夫入门技巧，让你少走弯路",
+                    author: "高球教练",
+                    exposure: 65.3,
+                    clickRate: 4.0,
+                    likes: 1024
+                },
+                {
+                    id: 6,
+                    category: "家居装修",
+                    image: "https://picsum.photos/seed/home2/600/400",
+                    title: "北欧风家居装修，简约而不简单，温馨舒适",
+                    author: "家居设计师",
+                    exposure: 89.7,
+                    clickRate: 3.9,
+                    likes: 1842
+                },
+                {
+                    id: 7,
+                    category: "快餐小吃",
+                    image: "https://picsum.photos/seed/food1/600/400",
+                    title: "深夜食堂，治愈你的胃和心，暖心又暖胃",
+                    author: "美食探险家",
+                    exposure: 76.8,
+                    clickRate: 3.9,
+                    likes: 843
+                },
+                {
+                    id: 8,
+                    category: "快餐小吃",
+                    image: "https://picsum.photos/seed/food2/600/400",
+                    title: "正宗川菜小吃，麻辣鲜香，让人回味无穷",
+                    author: "川味小吃",
+                    exposure: 68.5,
+                    clickRate: 4.1,
+                    likes: 765
+                },
+                {
+                    id: 9,
+                    category: "精品男装",
+                    image: "https://picsum.photos/seed/menswear2/600/400",
+                    title: "商务男士必备单品，提升你的职场魅力指数",
+                    author: "职场穿搭",
+                    exposure: 95.6,
+                    clickRate: 4.3,
+                    likes: 1789
+                }
+            ];
+
+            // 数据加载状态
+            let currentPage = 1;
+            const itemsPerPage = 4;
+            let isLoading = false;
+            let hasMoreData = true;
+            let creativeDataLoaded = false;
+            
+            // DOM元素
+            const contentContainer = document.getElementById('content-container');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            
+            // 处理滚动事件，实现无限加载
+            function handleScroll() {
+                // 只有在同行创意标签页才监听滚动事件
+                if (creativeContent.classList.contains('active') &&
+                    (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300 && 
+                    !isLoading && hasMoreData) {
+                    loadMoreItems();
+                }
+            }
+            
+            // 监听滚动事件
+            window.addEventListener('scroll', handleScroll);
+            
+            // 行业筛选功能
+            const industryBtn = document.getElementById('industry-btn');
+            const industryModal = document.getElementById('industry-modal');
+            const closeIndustryModal = document.getElementById('close-industry-modal');
+            const industryOptions = document.querySelectorAll('.industry-option');
+            const recommendBtn = document.getElementById('recommend-btn');
+            let currentIndustry = '推荐';
+            
+            // 打开行业筛选模态框
+            industryBtn.addEventListener('click', () => {
+                industryModal.classList.remove('hidden');
+                // 禁止背景滚动
+                document.body.style.overflow = 'hidden';
+            });
+            
+            // 关闭行业筛选模态框
+            closeIndustryModal.addEventListener('click', closeModal);
+            
+            // 点击模态框背景关闭
+            industryModal.addEventListener('click', (e) => {
+                if (e.target === industryModal) {
+                    closeModal();
+                }
+            });
+            
+            // 关闭模态框的通用函数
+            function closeModal() {
+                industryModal.classList.add('hidden');
+                // 恢复背景滚动
+                document.body.style.overflow = '';
+            }
+            
+            // 选择行业选项
+            industryOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    // 更新按钮样式
+                    industryOptions.forEach(opt => {
+                        opt.classList.remove('bg-primary/10', 'text-primary');
+                        opt.classList.add('bg-white', 'border', 'border-gray-200', 'text-gray-700');
+                    });
+                    option.classList.remove('bg-white', 'border', 'border-gray-200', 'text-gray-700');
+                    option.classList.add('bg-primary/10', 'text-primary');
+                    
+                    // 记录当前选择的行业
+                    currentIndustry = option.dataset.industry;
+                    
+                    // 更新推荐按钮样式
+                    if (currentIndustry === '推荐') {
+                        recommendBtn.classList.add('bg-primary', 'text-white');
+                        recommendBtn.classList.remove('bg-white', 'border', 'border-neutral-200', 'text-neutral-600');
+                    } else {
+                        recommendBtn.classList.remove('bg-primary', 'text-white');
+                        recommendBtn.classList.add('bg-white', 'border', 'border-neutral-200', 'text-neutral-600');
+                    }
+                    
+                    // 关闭模态框
+                    closeModal();
+                    
+                    // 筛选显示的内容
+                    filterCreativeItems(currentIndustry);
+                });
+            });
+            
+            // 点击推荐按钮
+            recommendBtn.addEventListener('click', () => {
+                // 更新按钮样式
+                recommendBtn.classList.add('bg-primary', 'text-white');
+                recommendBtn.classList.remove('bg-white', 'border', 'border-neutral-200', 'text-neutral-600');
+                
+                // 更新行业选项样式
+                industryOptions.forEach(opt => {
+                    if (opt.dataset.industry === '推荐') {
+                        opt.classList.remove('bg-white', 'border', 'border-gray-200', 'text-gray-700');
+                        opt.classList.add('bg-primary/10', 'text-primary');
+                    } else {
+                        opt.classList.remove('bg-primary/10', 'text-primary');
+                        opt.classList.add('bg-white', 'border', 'border-gray-200', 'text-gray-700');
+                    }
+                });
+                
+                // 筛选显示的内容
+                currentIndustry = '推荐';
+                filterCreativeItems(currentIndustry);
+            });
+            
+            // 筛选创意内容
+            function filterCreativeItems(industry) {
+                // 清空内容容器
+                contentContainer.innerHTML = '';
+                
+                // 重置加载状态
+                currentPage = 1;
+                hasMoreData = true;
+                
+                // 根据选择的行业筛选数据
+                let filteredData;
+                if (industry === '推荐') {
+                    filteredData = creativeData;
+                } else {
+                    filteredData = creativeData.filter(item => item.category === industry);
+                }
+                
+                // 如果没有符合条件的数据，显示空状态
+                if (filteredData.length === 0) {
+                    contentContainer.innerHTML = `
+                        <div class="flex flex-col items-center justify-center py-16 text-gray-500">
+                            <i class="fa fa-inbox text-4xl mb-4"></i>
+                            <p class="text-sm">暂无该行业的创意素材</p>
+                        </div>
+                    `;
+                    hasMoreData = false;
+                    return;
+                }
+                
+                // 加载并渲染筛选后的数据
+                loadFilteredItems(filteredData);
+            }
+            
+            // 加载筛选后的项目
+            function loadFilteredItems(filteredData) {
+                if (isLoading || !hasMoreData) return;
+                
+                isLoading = true;
+                loadingIndicator.classList.remove('hidden');
+                
+                // 模拟网络请求延迟
+                setTimeout(() => {
+                    const startIndex = (currentPage - 1) * itemsPerPage;
+                    const endIndex = startIndex + itemsPerPage;
+                    const itemsToLoad = filteredData.slice(startIndex, endIndex);
+                    
+                    if (itemsToLoad.length > 0) {
+                        renderItems(itemsToLoad);
+                        currentPage++;
+                        if (endIndex >= filteredData.length) {
+                            hasMoreData = false;
+                        }
+                    } else {
+                        hasMoreData = false;
+                    }
+                    
+                    isLoading = false;
+                    loadingIndicator.classList.add('hidden');
+                }, 800);
+            }
+            
+            // 重写滚动事件处理函数，使其考虑筛选状态
+            function handleScroll() {
+                // 只有在同行创意标签页才监听滚动事件
+                if (creativeContent.classList.contains('active') &&
+                    (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300 && 
+                    !isLoading && hasMoreData) {
+                    
+                    // 根据当前选择的行业加载更多数据
+                    if (currentIndustry === '推荐') {
+                        loadMoreItems();
+                    } else {
+                        const filteredData = creativeData.filter(item => item.category === currentIndustry);
+                        loadFilteredItems(filteredData);
+                    }
+                }
+            }
+
+            // 加载更多内容
+            function loadMoreItems() {
+                if (isLoading || !hasMoreData) return;
+                
+                isLoading = true;
+                loadingIndicator.classList.remove('hidden');
+                
+                // 模拟网络请求延迟
+                setTimeout(() => {
+                    // 生成新数据（实际应用中应从API获取）
+                    const newItems = generateMoreItems(currentPage, itemsPerPage);
+                    
+                    if (newItems.length > 0) {
+                        renderItems(newItems);
+                        currentPage++;
+                    } else {
+                        hasMoreData = false;
+                    }
+                    
+                    isLoading = false;
+                    loadingIndicator.classList.add('hidden');
+                }, 1000);
+            }
+
+            // 生成更多数据（模拟API返回）
+            function generateMoreItems(page, perPage) {
+                const startIndex = (page - 1) * perPage;
+                const endIndex = startIndex + perPage;
+                
+                // 复制并修改原始数据以模拟新内容
+                return creativeData.slice(startIndex % creativeData.length, endIndex % creativeData.length).map(item => {
+                    return {
+                        ...item,
+                        id: item.id + (page - 1) * perPage * 100,
+                        image: item.image || `https://picsum.photos/seed/food${item.id + page}/600/400`
+                    };
+                });
+            }
+
+            // 渲染素材卡片 - 两列布局
+            function renderItems(items) {
+                // 创建一个容器div来容纳这一批卡片
+                const batchContainer = document.createElement('div');
+                batchContainer.className = 'grid grid-cols-2 gap-4';
+                
+                items.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-white rounded-xl overflow-hidden card-shadow fade-in transform transition-all duration-300 hover:scale-[1.01]';
+                    card.innerHTML = `
+                        <div class="relative">
+                            <img src="${item.image}" alt="${item.title}" class="w-full h-40 object-cover">
+                            <div class="absolute top-2 left-2 bg-secondary/90 text-white text-xs px-2 py-1 rounded-full">
+                                ${item.category}
+                            </div>
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
+                                <div class="flex justify-between items-center">
+                                    <div class="text-white text-xs">
+                                        <span class="mr-2"><i class="fa fa-eye mr-1"></i>${item.exposure}万</span>
+                                        <span><i class="fa fa-mouse-pointer mr-1"></i>${item.clickRate}%</span>
+                                    </div>
+                                    <div class="text-white text-xs flex items-center">
+                                        <i class="fa fa-heart mr-1"></i>${item.likes}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-3">
+                            <div class="flex items-center mb-2">
+                                <img src="https://picsum.photos/seed/user${item.id}/100/100" alt="${item.author}" class="w-5 h-5 rounded-full mr-1.5">
+                                <span class="text-xs text-neutral-600">${item.author}</span>
+                            </div>
+                            <p class="text-sm text-neutral-800 mb-3 line-clamp-2 h-10">${item.title}</p>
+                            <button class="w-full py-1.5 bg-primary/10 text-primary text-sm rounded-lg font-medium btn-effect">
+                                AI 做同款
+                            </button>
+                        </div>
+                    `;
+                    batchContainer.appendChild(card);
+                });
+                
+                contentContainer.appendChild(batchContainer);
+            }
+        });
+    </script>
+
+
+</body></html>
